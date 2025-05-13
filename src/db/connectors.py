@@ -28,12 +28,13 @@ class SQLiteConnector:
         Base.metadata.create_all(bind=self.engine)
         
     def get_session(self) -> Session:
-        """Get a new database session.
+        """Get a database session. Reuses existing session if available.
         
         Returns:
             Session: SQLAlchemy session
         """
-        self.session = self.SessionLocal()
+        if self.session is None:
+            self.session = self.SessionLocal()
         return self.session
 
     def close_session(self) -> None:
