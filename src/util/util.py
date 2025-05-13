@@ -62,7 +62,7 @@ def setup_logger(config: Dict) -> logging.Logger:
     log_file = log_dir / 'autocatlab.log'
     file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.INFO)
-    
+
     # Create formatter that includes timestamp and file/class name
     formatter = logging.Formatter('%(asctime)s - %(pathname)s:%(lineno)d - %(funcName)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(formatter)
@@ -72,6 +72,8 @@ def setup_logger(config: Dict) -> logging.Logger:
     # Create console handler
     handler = logging.StreamHandler()
     handler.setLevel(logging.INFO)
+
+    logger.addHandler(file_handler)
     
     # Create formatter
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
