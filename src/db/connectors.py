@@ -21,6 +21,7 @@ class SQLiteConnector:
         self.engine = create_engine(f'sqlite:///{self.db_path}')
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         self.create_tables()
+        self.session = None
         
     def create_tables(self) -> None:
         """Create database tables if they don't exist."""
@@ -32,7 +33,23 @@ class SQLiteConnector:
         Returns:
             Session: SQLAlchemy session
         """
-        return self.SessionLocal()        
+        self.session = self.SessionLocal()
+        return self.session
+
+    def close_session(self) -> None:
+        """Close the current database session."""
+        if self.session:
+            self.session.close()
+            self.session = None
+
+    def __enter__(self):
+        """Context manager entry."""
+        self.get_session()
+        return self
+        
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit."""
+        self.close_session()
         
 
 class ASEDBConnector:

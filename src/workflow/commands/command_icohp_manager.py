@@ -44,34 +44,36 @@ class StartICOHPManager(CommandBase):
             Any: Execution result
         """
         
-            
-        try:
-            self.logger.info("Setting up ICOHP workflow")
 
-            workflow_detail = self.container.get('workflow_crud').get_workflow(
-                self.container.get('sqlite_connector').get_session(),
-                self.container.get('config')['workflow_name']
-            )
+        with self.container.get('sqlite_connector') as connector:
             
-            if not self.validate(workflow_detail, args):
+            try:
+                self.logger.info("Setting up ICOHP workflow")
+
+                workflow_detail = self.container.get('workflow_crud').get_workflow(
+                    connector.get_session(),
+                    self.container.get('config')['workflow_name']
+                )
+                
+                if not self.validate(workflow_detail, args):
+                    return False
+                
+                batches = self.container.get('batch_crud').get_batches(
+                    connector.get_session(),
+                    workflow_detail.calc_unique_name)
+                
+                completed_dft_batches = [batch for batch in batches 
+                                    if batch.status == 'completed' and batch.calculation_type == 'dft']
+                
+                batch_processor = self.container.get('batch_processor')
+                job_processor = self.container.get('job_processor')
+                
+                batches = batch_processor.process_icohp(workflow_detail, batches)
+                return job_processor.process(workflow_detail, completed_dft_batches, 'start-icohp')
+                
+            except Exception as e:
+                self.logger.error(f"Error starting ICOHP calculations: {str(e)}")
                 return False
-            
-            batches = self.container.get('batch_crud').get_batches(
-            self.container.get('sqlite_connector').get_session(),
-            workflow_detail.calc_unique_name)
-            
-            completed_dft_batches = [batch for batch in batches 
-                                if batch.status == 'completed' and batch.calculation_type == 'dft']
-            
-            batch_processor = self.container.get('batch_processor')
-            job_processor = self.container.get('job_processor')
-            
-            batches = batch_processor.process_icohp(workflow_detail, batches)
-            return job_processor.process(workflow_detail, completed_dft_batches, 'start-icohp')
-            
-        except Exception as e:
-            self.logger.error(f"Error starting ICOHP calculations: {str(e)}")
-            return False
 
 class ResumeICOHPManager(CommandBase):
     """Manager for resuming ICOHP calculations."""
@@ -114,29 +116,30 @@ class ResumeICOHPManager(CommandBase):
             Any: Execution result
         """
        
+        with self.container.get('sqlite_connector') as connector:
             
-        try:
-            self.logger.info("Resuming ICOHP calculations")
+            try:
+                self.logger.info("Resuming ICOHP calculations")
 
-            workflow_detail = self.container.get('workflow_crud').get_workflow(
-                self.container.get('sqlite_connector').get_session(),
-                self.container.get('config')['workflow_name']
-            )
-            
-            if not self.validate(workflow_detail, args):
-                return False
-            
-            batches = self.container.get('batch_crud').get_batches(
-                self.container.get('sqlite_connector').get_session(),
-                workflow_detail.calc_unique_name)
+                workflow_detail = self.container.get('workflow_crud').get_workflow(
+                    connector.get_session(),
+                    self.container.get('config')['workflow_name']
+                )
                 
-            resume_batches = [batch for batch in batches 
-                            if batch.status != 'completed' and batch.calculation_type == 'icohp']
-           
-            job_processor = self.container.get('job_processor')
+                if not self.validate(workflow_detail, args):
+                    return False
+                
+                batches = self.container.get('batch_crud').get_batches(
+                    connector.get_session(),
+                    workflow_detail.calc_unique_name)
+                    
+                resume_batches = [batch for batch in batches 
+                                if batch.status != 'completed' and batch.calculation_type == 'icohp']
             
-            return job_processor.process(workflow_detail, resume_batches, 'resume-icohp')
-            
-        except Exception as e:
-            self.logger.error(f"Error resuming ICOHP calculations: {str(e)}")
-            return False 
+                job_processor = self.container.get('job_processor')
+                
+                return job_processor.process(workflow_detail, resume_batches, 'resume-icohp')
+                
+            except Exception as e:
+                self.logger.error(f"Error resuming ICOHP calculations: {str(e)}")
+                return False 
