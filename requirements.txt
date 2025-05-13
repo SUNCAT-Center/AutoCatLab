@@ -1,0 +1,7 @@
+ase>=3.22.0
+pymatgen>=2023.12.18
+mp-api>=0.43.0
+click>=8.1.7
+rich>=13.7.0
+sqlalchemy>=2.0.25
+pyslurm>=23.11.0 

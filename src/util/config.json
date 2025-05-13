@@ -1,0 +1,142 @@
+{
+    "workflow_name": "unique_name",
+    "workflow_input": {
+      "type": "location",
+      "value": "/Users/viny/Desktop/personal/ruchika/input/",
+      "mp_api_key": "jXiKAGxuhEvtvGir6oFT4T3a5EuNS6Uz"
+    },
+    "workflow_output_directory": "/Users/viny/Desktop/personal/ruchika/output/",
+    "batch_size": 5,
+    "workflow_steps": [
+    {
+    "calculations": ["BULK_DFT_RELAX","BULK_DFT_RELAX_REPORT", "BULK_DFT_DOS", "BULK_DFT_DOS_REPORT"],
+    "submission_detail": {
+        "gpu_queue": "debug",
+        "time": "00:05:00",
+        "node": 1,
+        "gpu": 4,
+        "nTask":4,
+        "cpusPertask":32
+    },
+    "scheduler": {
+      "type": "slurm",
+      "prepend_commands": [
+        "#SBATCH -A m2997_g",
+        "export OMP_NUM_THREADS=1",
+        "export OMP_PLACES=threads",
+        "export OMP_PROC_BIND=spread",
+        "module load vasp/6.4.3-gpu",
+        "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54",
+        "export DB_OUTPUT_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
+      ]
+    }
+    },
+    {
+    "calculations": ["BULK_ICOHP","BULK_ICOHP_REPORT"],
+    "submission_detail": {
+        "cpu_queue": "regular",
+        "cpu_time": "05:00:00",
+        "cpu_node": 1
+      },
+    "scheduler": {
+    "type": "slurm",
+    "prepend_commands": [
+      "#SBATCH -A m2997",
+      "export OMP_NUM_THREADS=128",
+      "export OMP_PLACES=threads",
+      "export OMP_PROC_BIND=spread",
+      "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
+    ]
+    }
+    }
+    ],
+    "user_luj_values": {
+      "Sc": {"L": 2, "U": 1.00, "J": 0.0},
+      "Fe": {"L": 2, "U": 5.00, "J": 0.1}
+    },
+    "workflow_step_parameters": {
+      "BULK_DFT_RELAX": {
+        "istart": 0,
+        "setups": {
+          "base": "recommended",
+          "W": "_sv"
+        },
+        "encut": 600,
+        "xc": "PBE",
+        "gga": "PE",
+        "npar":1,
+        "gamma": true,
+        "ismear": 0,
+        "inimix": 0,
+        "amix": 0.1,
+        "bmix": 0.00001,
+        "amix_mag": 0.1,
+        "bmix_mag": 0.00001,
+        "nelm": 250,
+        "sigma": 0.05,
+        "algo": "normal",
+        "ibrion": 2,
+        "isif": 3,
+        "ediffg": -0.02,
+        "ediff": 0.00000001,
+        "prec": "Normal",
+        "nsw": 200,
+        "lvtot": false,
+        "ispin": 2,
+        "ldau": true,
+        "ldautype": 2,
+        "laechg": true,
+        "lreal": false,
+        "lasph": true,
+        "ldauprint": 2,
+        "lmaxmix": 6,
+        "lorbit": 11,
+        "kpar":4
+      },
+      "BULK_DFT_DOS": {
+        "istart": 0,
+        "setups": {
+          "base": "recommended",
+          "W": "_sv"
+        },
+        "encut": 600,
+        "xc": "PBE",
+        "gga": "PE",
+        "gamma": true,
+        "ismear": 0,
+        "inimix": 0,
+        "amix": 0.1,
+        "bmix": 0.00001,
+        "amix_mag": 0.1,
+        "bmix_mag": 0.00001,
+        "nelm": 250,
+        "sigma": 0.05,
+        "algo": "normal",
+        "ibrion": 2,
+        "isif": 3,
+        "ediffg": -0.02,
+        "ediff": 0.00000001,
+        "prec": "Normal",
+        "nsw": 200,
+        "lvtot": false,
+        "ispin": 2,
+        "ldau": true,
+        "ldautype": 2,
+        "laechg": true,
+        "lreal": false,
+        "lasph": true,
+        "ldauprint": 2,
+        "lmaxmix": 6,
+        "lorbit": 11,
+         "kpar":4,
+         "npar":1
+      },
+      "BULK_ICOHP": {
+        "basisSet": "pbeVaspFit2015",
+        "COHPStartEnergy": "-100",
+        "COHPEndEnergy": "100",
+        "DensityOfEnergy":".TRUE.",
+        "max_radii":"2.3"
+      }
+    }
+} 

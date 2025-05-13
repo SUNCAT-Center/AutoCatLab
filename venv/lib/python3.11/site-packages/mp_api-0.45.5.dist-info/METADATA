@@ -1,0 +1,51 @@
+Metadata-Version: 2.4
+Name: mp-api
+Version: 0.45.5
+Summary: API Client for the Materials Project
+Author-email: The Materials Project <feedback@materialsproject.org>
+License: modified BSD
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Information Technology
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: setuptools
+Requires-Dist: msgpack
+Requires-Dist: maggma>=0.57.1
+Requires-Dist: pymatgen!=2024.2.20,>=2022.3.7
+Requires-Dist: typing-extensions>=3.7.4.1
+Requires-Dist: requests>=2.23.0
+Requires-Dist: monty>=2024.12.10
+Requires-Dist: emmet-core>=0.84.3rc6
+Requires-Dist: smart_open
+Provides-Extra: all
+Requires-Dist: emmet-core[all]>=0.69.1; extra == "all"
+Requires-Dist: custodian; extra == "all"
+Requires-Dist: mpcontribs-client; extra == "all"
+Requires-Dist: boto3; extra == "all"
+Provides-Extra: test
+Requires-Dist: pre-commit; extra == "test"
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pytest-asyncio; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Requires-Dist: flake8; extra == "test"
+Requires-Dist: pycodestyle; extra == "test"
+Requires-Dist: mypy; extra == "test"
+Requires-Dist: mypy-extensions; extra == "test"
+Requires-Dist: typing-extensions; extra == "test"
+Requires-Dist: types-setuptools; extra == "test"
+Requires-Dist: types-requests; extra == "test"
+Dynamic: license-file
+
+# The Materials Project API
+
+[![testing](https://github.com/materialsproject/api/workflows/testing/badge.svg)](https://github.com/materialsproject/api/actions?query=workflow%3Atesting)
+[![codecov](https://codecov.io/gh/materialsproject/api/branch/main/graph/badge.svg)](https://codecov.io/gh/materialsproject/api)
+![python](https://img.shields.io/badge/Python-3.9+-blue.svg?logo=python&amp;logoColor=white)
+
+This repository is the development environment for the new Materials Project API. A core client implementation will reside here. For information on how to use the API, please see the updated [documentation](https://docs.materialsproject.org/downloading-data/how-do-i-download-the-materials-project-database).

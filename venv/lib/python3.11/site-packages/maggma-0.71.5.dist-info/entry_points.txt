@@ -1,0 +1,2 @@
+[console_scripts]
+mrun = maggma.cli:run

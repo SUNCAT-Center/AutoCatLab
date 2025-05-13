@@ -1,0 +1,72 @@
+Metadata-Version: 2.4
+Name: emmet-core
+Version: 0.84.7rc1
+Summary: Core Emmet Library
+Home-page: https://github.com/materialsproject/emmet
+Author: The Materials Project
+Author-email: feedback@materialsproject.org
+License: modified BSD
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: pymatgen>=2024.6.10
+Requires-Dist: monty>=2024.2.2
+Requires-Dist: pydantic>=2.0
+Requires-Dist: pydantic-settings>=2.0
+Requires-Dist: pybtex~=0.24
+Requires-Dist: typing-extensions>=3.7
+Provides-Extra: all
+Requires-Dist: matcalc>=0.3.1; extra == "all"
+Requires-Dist: seekpath>=2.0.1; extra == "all"
+Requires-Dist: robocrys>=0.2.11; extra == "all"
+Requires-Dist: pymatgen-analysis-defects>=2024.7.18; extra == "all"
+Requires-Dist: pymatgen-analysis-diffusion>=2024.7.15; extra == "all"
+Requires-Dist: pymatgen-analysis-alloys>=0.0.6; extra == "all"
+Requires-Dist: solvation-analysis>=0.4.1; extra == "all"
+Requires-Dist: transport-analysis; extra == "all"
+Requires-Dist: MDAnalysis>=2.7.0; extra == "all"
+Requires-Dist: pyarrow; extra == "all"
+Provides-Extra: ml
+Requires-Dist: chgnet; extra == "ml"
+Requires-Dist: matgl; extra == "ml"
+Requires-Dist: dgl<=2.1; extra == "ml"
+Provides-Extra: test
+Requires-Dist: pre-commit; extra == "test"
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pycodestyle; extra == "test"
+Requires-Dist: pydocstyle; extra == "test"
+Requires-Dist: flake8; extra == "test"
+Requires-Dist: mypy; extra == "test"
+Requires-Dist: mypy-extensions; extra == "test"
+Requires-Dist: types-setuptools; extra == "test"
+Requires-Dist: types-requests; extra == "test"
+Requires-Dist: wincertstore; extra == "test"
+Requires-Dist: custodian; extra == "test"
+Provides-Extra: docs
+Requires-Dist: mkdocs; extra == "docs"
+Requires-Dist: mkdocs-material<8.3; extra == "docs"
+Requires-Dist: mkdocs-material-extensions; extra == "docs"
+Requires-Dist: mkdocs-minify-plugin; extra == "docs"
+Requires-Dist: mkdocstrings; extra == "docs"
+Requires-Dist: mkdocs-awesome-pages-plugin; extra == "docs"
+Requires-Dist: mkdocs-markdownextradata-plugin; extra == "docs"
+Requires-Dist: mkdocstrings[python]; extra == "docs"
+Requires-Dist: livereload; extra == "docs"
+Requires-Dist: jinja2; extra == "docs"
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# ![Emmet](docs/images/logo_w_text.svg)
+
+[![Pytest Status](https://github.com/materialsproject/emmet/workflows/testing/badge.svg)](https://github.com/materialsproject/emmet/actions?query=workflow%3Atesting)
+[![Code Coverage](https://codecov.io/gh/materialsproject/emmet/branch/main/graph/badge.svg)](https://codecov.io/gh/materialsproject/emmet)
+
+The Materials API Toolkit for the Materials Project. Emmet defines the core models, data pipelines, the API server, and the convenience CLI.
