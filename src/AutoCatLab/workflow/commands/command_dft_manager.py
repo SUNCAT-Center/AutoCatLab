@@ -52,9 +52,6 @@ class StartDFTManager(CommandBase):
                 batches, executions = batch_processor.process(workflow_detail, 'dft',input_data)
                 self.logger.info("DFT calculation workflow started")
                 return job_processor.process(workflow_detail, batches)
-
-
-
         except Exception as e:
             self.logger.error(f"Error starting DFT calculations: {str(e)}")
             return False
