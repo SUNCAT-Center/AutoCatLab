@@ -1,2 +1,2 @@
 [console_scripts]
-autocatlab = main:cli
+autocatlab = AutoCatLab.main:cli

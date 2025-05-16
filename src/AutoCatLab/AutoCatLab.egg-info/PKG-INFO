@@ -1,0 +1,17 @@
+Metadata-Version: 2.4
+Name: AutoCatLab
+Version: 0.1.0
+Summary: Automated Catalyst Laboratory
+Requires-Python: >=3.8
+Requires-Dist: ase>=3.22.0
+Requires-Dist: pymatgen>=2023.12.18
+Requires-Dist: mp-api>=0.43.0
+Requires-Dist: click>=8.1.7
+Requires-Dist: rich>=13.7.0
+Requires-Dist: sqlalchemy>=2.0.25
+Requires-Dist: mendeleev>=0.14.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: black>=23.0; extra == "dev"
+Requires-Dist: isort>=5.0; extra == "dev"
+Requires-Dist: flake8>=6.0; extra == "dev"

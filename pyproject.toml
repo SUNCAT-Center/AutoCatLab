@@ -26,18 +26,19 @@ dev = [
 ]
 
 [project.scripts]
-autocatlab = "main:cli"
+autocatlab = "AutoCatLab.main:cli"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 packages = [
-    "workflow",
-    "initializer",
-    "executor",
-    "db",
-    "util",
-    "constant",
-    "client",
-    "validator",
-    "logger"
+    "AutoCatLab",
+    "AutoCatLab.workflow",
+    "AutoCatLab.initializer",
+    "AutoCatLab.executor",
+    "AutoCatLab.db",
+    "AutoCatLab.util",
+    "AutoCatLab.constant",
+    "AutoCatLab.client",
+    "AutoCatLab.validator",
+    "AutoCatLab.logger"
 ] 
