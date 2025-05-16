@@ -23,6 +23,10 @@ src/AutoCatLab/executor/calculation_executor.py
 src/AutoCatLab/executor/dft_dos_executor.py
 src/AutoCatLab/executor/dft_relax_executor.py
 src/AutoCatLab/executor/icohp_executor.py
+src/AutoCatLab/executor/util/calculation_helper.py
+src/AutoCatLab/executor/util/rapidos.py
+src/AutoCatLab/executor/util/splitdos.py
+src/AutoCatLab/executor/util/util.py
 src/AutoCatLab/initializer/__init__.py
 src/AutoCatLab/initializer/batch_processor.py
 src/AutoCatLab/initializer/input_processor.py
@@ -34,3 +38,10 @@ src/AutoCatLab/util/util.py
 src/AutoCatLab/validator/__init__.py
 src/AutoCatLab/workflow/__init__.py
 src/AutoCatLab/workflow/workflow_manager.py
+src/AutoCatLab/workflow/commands/__init__.py
+src/AutoCatLab/workflow/commands/command_base.py
+src/AutoCatLab/workflow/commands/command_cleanup_manager.py
+src/AutoCatLab/workflow/commands/command_dft_manager.py
+src/AutoCatLab/workflow/commands/command_icohp_manager.py
+src/AutoCatLab/workflow/commands/command_progress_manager.py
+src/AutoCatLab/workflow/commands/command_report_manager.py

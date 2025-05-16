@@ -11,11 +11,12 @@ from yaml import Loader
 
 from ase.data import covalent_radii as cradii
 import pkgutil
+import pkg_resources
 
 from .rapidos import RapiDOS
 
-# Load the YAML file from the local directory
-yaml_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "constant", "valence_orbital_mapping.yaml")
+# Use pkg_resources to locate the YAML file within the installed package
+yaml_path = pkg_resources.resource_filename('AutoCatLab', 'constant/valence_orbital_mapping.yaml')
 with open(yaml_path, 'r') as f:
     orbital_map = yaml.safe_load(f)
 
