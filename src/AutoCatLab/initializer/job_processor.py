@@ -45,8 +45,8 @@ class JobProcessor:
                 if result.returncode == 0:
                 # if result["returncode"] == 0:
                     # Parse job ID from output (format: "Submitted batch job 12345")
-                    # job_id = result.stdout.strip().split()[-1]
-                    job_id = result["stdout"].strip().split()[-1]
+                    job_id = result.stdout.strip().split()[-1]
+                    # job_id = result["stdout"].strip().split()[-1]
                     self.container.get('batch_crud').update_batch(
                         connector.get_session(),
                         batch.batch_id,
