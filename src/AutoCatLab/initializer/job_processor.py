@@ -37,6 +37,7 @@ class JobProcessor:
                 result = subprocess.run(['sbatch', str(batch.script_path)],
                                     capture_output=True,
                                     text=True)
+                print("result are", result)
                 # result = {
                 #     "returncode": 0,
                 #     "stdout": "Submitted batch job 12345"
