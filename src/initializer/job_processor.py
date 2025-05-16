@@ -3,6 +3,7 @@ from typing import Dict, Any, List
 import subprocess
 from container import Container
 from db.models import WorkflowBatchDetail
+from util.util import show_message
 
 class JobProcessor:
     """Processes jobs for calculations."""
@@ -25,7 +26,7 @@ class JobProcessor:
             batches (List[Dict[str, Any]]): List of batch configurations
         """
         self.logger.info(f"Processing jobs for {calculation}")
-        
+        failed_batches = []
         with self.container.get('sqlite_connector') as connector:
             for batch in batches:
                 try:
@@ -44,11 +45,15 @@ class JobProcessor:
                             {'job_id': job_id}
                         )
                     else:
+                        failed_batches.append(batch)
                         raise Exception(f"Job submission failed: {result.stderr}")
                     
                 except Exception as e:
                     self.logger.error(f"Failed to submit batch {batch.batch_id}: {str(e)}")
                     raise
+            if not failed_batches:
+                show_message("All jobs submitted successfully", "success")
+                self.logger.info("All jobs submitted successfully")
 
 
             

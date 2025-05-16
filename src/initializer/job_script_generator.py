@@ -54,7 +54,6 @@ class JobScriptGenerator:
         return script_path
     
     def _generate_slurm_header(self, batch_script_file_name_prefix:str, step_config: Dict, workflow_id: str, script_dir: str) -> List[str]:
-        self.logger.info(f"Step config: {step_config}")
         
         """Generate SLURM-specific header for the job script."""
         header = [
@@ -66,7 +65,6 @@ class JobScriptGenerator:
         submission_detail = step_config.get('submission_detail', {})
         
         if submission_detail and 'gpu_queue' in submission_detail and submission_detail['gpu_queue'] is not None:
-            self.logger.info("Using GPU settings")
             header.extend([
                 f"#SBATCH -q {submission_detail['gpu_queue']}",
                 f"#SBATCH -t {submission_detail['time']}",
@@ -85,7 +83,6 @@ class JobScriptGenerator:
                 ])
         # Add CPU-specific settings if present
         elif submission_detail and 'cpu_queue' in submission_detail and submission_detail['cpu_queue'] is not None:
-            self.logger.info("Using CPU settings")
             header.extend([
                 f"#SBATCH -q {submission_detail['cpu_queue']}",
                 f"#SBATCH -t {submission_detail['cpu_time']}",
@@ -112,7 +109,6 @@ class JobScriptGenerator:
         
         # Add GPU-specific settings if present
         if submission_detail and 'gpu_queue' in submission_detail:
-            self.logger.info("Using GPU settings")
             header.extend([
                 f"#PBS -q {submission_detail['gpu_queue']}",
                 f"#PBS -l walltime={submission_detail['time']}",
@@ -129,7 +125,6 @@ class JobScriptGenerator:
                 ])
         # Add CPU-specific settings if present
         elif submission_detail and 'cpu_queue' in submission_detail:
-            self.logger.info("Using CPU settings")
             header.extend([
                 f"#PBS -q {submission_detail['cpu_queue']}",
                 f"#PBS -l walltime={submission_detail['cpu_time']}",

@@ -1,9 +1,10 @@
 """DFT relaxation executor implementation."""
+from datetime import datetime
 import os
 from pathlib import Path
 from typing import Any, Dict
 from db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
-from executor.util.calculation_helper import get_LUJ_values, get_initial_magmoms, get_kpoints, get_restart
+from executor.util.util import get_LUJ_values, get_initial_magmoms, get_kpoints, get_restart
 from util.util import copy_file
 from .calculation_executor import CalculationExecutor
 from ase.io import read
@@ -31,10 +32,9 @@ class DFTRelaxExecutor(CalculationExecutor):
             bool: True if calculation executed successfully
         """
         try:
-            self.logger.info(f"Executing bulk DFT relaxation for material {execution['material_name']}")
+            self.logger.info(f"Executing bulk DFT relaxation for material {execution.material_name}")
 
             dir = execution.result_material_dir
-            restart_json = Path(dir) / "restart.json"
             start_json = Path(dir) /  "start.json"
 
             # Get step configuration and submission details
@@ -46,12 +46,10 @@ class DFTRelaxExecutor(CalculationExecutor):
             command = 'srun -n ' + str(nTask) + ' -c ' + str(
                 cpusPertask) + ' --cpu-bind=cores --gpu-bind=none -G ' + str(gpu) + ' vasp_std'
 
-            if os.path.exists(restart_json):
-                atoms = read(restart_json)
-            else:
-                atoms = read(start_json)
-                initial_magmoms = get_initial_magmoms(atoms)
-                atoms.set_initial_magnetic_moments(initial_magmoms)
+            atoms = read(start_json)
+            initial_magmoms = get_initial_magmoms(atoms)
+            atoms.set_initial_magnetic_moments(initial_magmoms)
+
 
             kpoints = get_kpoints(atoms, effective_length=30, bulk=True)
             user_luj = config['user_luj_values']
@@ -68,24 +66,23 @@ class DFTRelaxExecutor(CalculationExecutor):
                 'ldau_luj': LUJ_values
             })
 
-            # Create VASP calculator with all parameters
             calc = Vasp(**vasp_params)
 
             atoms.set_calculator(calc)
-            atoms.get_potential_energy()
-            get_restart('OUTCAR', dir)
-            # Copy files using utility function instead of direct subprocess call
+            # atoms.get_potential_energy()
+            get_restart('OUTCAR', dir + '/')
+
             copy_file(Path(dir) / 'WAVECAR', Path(dir) / '../BULK_DFT_DOS/')
             copy_file(Path(dir) / 'POTCAR', Path(dir) / '../BULK_DFT_DOS/')
             copy_file(Path(dir) / 'POSCAR', Path(dir) / '../BULK_DFT_DOS/')
             copy_file(Path(dir) / 'restart.json', Path(dir) / '../BULK_DFT_DOS/restart.json')
 
-
-
+            # raise Exception("Test error DOS")
 
             execution.status = 'completed'
             execution.success = True
             execution.error = None
+            execution.completed_at = datetime.now()
             return True
             
         except Exception as e:

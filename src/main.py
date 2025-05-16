@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
 import click
-from rich.console import Console
-from rich import print as rprint
 from container import create_container
 
-console = Console()
 
 @click.group()
 def cli():
@@ -19,7 +16,6 @@ def cleanup(config: str):
     try:
         run_workflow(config, command_step='cleanup')
     except Exception as e:
-        rprint(f"[red]Error cleaning workflow: {str(e)}[/red]")
         raise click.Abort()
 
 @cli.command()
@@ -29,7 +25,6 @@ def start_dft(config: str):
     try:
         run_workflow(config, command_step='start-dft') 
     except Exception as e:
-        rprint(f"[red]Error starting DFT workflow: {str(e)}[/red]")
         raise click.Abort()
 
 @cli.command()
@@ -39,7 +34,6 @@ def resume_dft(config: str):
     try:
         run_workflow(config, command_step='resume-dft')
     except Exception as e:
-        rprint(f"[red]Error resuming DFT workflow: {str(e)}[/red]")
         raise click.Abort()
 
 @cli.command()
@@ -49,7 +43,6 @@ def start_icohp(config: str):
     try:
         run_workflow(config, command_step='start-icohp')
     except Exception as e:
-        rprint(f"[red]Error starting ICOHP workflow: {str(e)}[/red]")
         raise click.Abort()
 
 @cli.command()
@@ -59,7 +52,6 @@ def resume_icohp(config: str):
     try:
         run_workflow(config, command_step='resume-icohp')
     except Exception as e:
-        rprint(f"[red]Error resuming ICOHP workflow: {str(e)}[/red]")
         raise click.Abort()
 
 @cli.command()
@@ -77,7 +69,6 @@ def show_progress(config: str, calculation_type: str = None):
         else:
             run_workflow(config, command_step='show-progress')
     except Exception as e:
-        rprint(f"[red]Error showing progress: {str(e)}[/red]")
         raise click.Abort()
 
 @cli.command()
@@ -92,7 +83,6 @@ def show_report(config: str, calculation_type: str):
     try:
         run_workflow(config, command_step='show-report', args=[calculation_type])
     except Exception as e:
-        rprint(f"[red]Error showing report: {str(e)}[/red]")
         raise click.Abort()
 
 
@@ -111,7 +101,6 @@ def execute_batch(config: str, workflow_name: str, batch_id: str):
     try:
         run_executor(config, workflow_name, batch_id)
     except Exception as e:
-        rprint(f"[red]Error executing batch: {str(e)}[/red]")
         raise click.Abort()
 
 
@@ -136,7 +125,6 @@ def run_executor(config_path: str, workflow_name: str, batch_id: str):
             raise Exception("Batch execution failed")
             
     except Exception as e:
-        rprint(f"[red]Error executing batch: {str(e)}[/red]")
         raise click.Abort()
 
 
@@ -150,20 +138,9 @@ def run_workflow(file_path: str = None, command_step: str = None, args: list[str
         command_step (str, optional): The workflow command step to execute.
         args (list[str], optional): Additional arguments for the workflow.
     """
-    try:
-        # Create container with all dependencies
-        container = create_container(file_path)
-        
-        # Get workflow manager and run workflow
-        workflow_manager = container.get('workflow_manager')
-
-        workflow_manager.run(command_step, args)
-
-        
-    except Exception as e:
-        rprint(f"[red]Error running workflow: {str(e)}[/red]")
-        raise click.Abort()
-
+    container = create_container(file_path)        
+    workflow_manager = container.get('workflow_manager')
+    workflow_manager.run(command_step, args)
 
 
 if __name__ == '__main__':

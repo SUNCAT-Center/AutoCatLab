@@ -66,6 +66,11 @@ class BatchCRUD:
         return batch
     
     @staticmethod
+    def get_batches(db: Session, workflow_unique_name: str) -> Optional[List[WorkflowBatchDetail]]:
+        """Get batches by workflow unique name."""
+        return db.query(WorkflowBatchDetail).filter(WorkflowBatchDetail.workflow_unique_name == workflow_unique_name).all()
+    
+    @staticmethod
     def get_batch(db: Session, batch_id: int) -> Optional[WorkflowBatchDetail]:
         """Get batch by ID."""
         return db.query(WorkflowBatchDetail).filter(WorkflowBatchDetail.batch_id == batch_id).first()
@@ -105,7 +110,10 @@ class ExecutionCRUD:
     @staticmethod
     def get_executions(db: Session, batch_id: int) -> Optional[List[WorkflowBatchExecution]]:
         """Get executions by batch ID."""
-        return db.query(WorkflowBatchExecution).filter(WorkflowBatchExecution.batch_id == batch_id).all()
+        return db.query(WorkflowBatchExecution).filter(
+            WorkflowBatchExecution.batch_id == batch_id,
+            WorkflowBatchExecution.status != 'completed'
+            ).all()
     
     @staticmethod
     def get_execution(db: Session, execution_id: int) -> Optional[WorkflowBatchExecution]:

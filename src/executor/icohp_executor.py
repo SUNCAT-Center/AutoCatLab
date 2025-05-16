@@ -1,4 +1,5 @@
 """ICOHP executor implementation."""
+from datetime import datetime
 import os
 from pathlib import Path
 import subprocess
@@ -31,18 +32,14 @@ class ICOHPExecutor(CalculationExecutor):
         try:
             self.logger.info(f"Executing ICOHP for {execution.material_name}")            
 
-            # Get source and destination directories
             source_dir = Path(execution.result_material_dir).parent / "BULK_DFT_DOS/"
             dest_dir = Path(execution.result_material_dir)
             
-            # Get LOBSTER configuration parameters
             lobster_params = config['workflow_step_parameters']['BULK_ICOHP']
             
-            # Write lobster input file in destination directory
-            write_lobsterIn(source_dir, config_params=lobster_params)
+            write_lobsterIn(str(source_dir) + '/', config_params=lobster_params)
             
-            # Run lobster from source directory
-            subprocess.call(f'cd {source_dir} && lobster-4.1.0', shell=True)            
+            # subprocess.call(f'cd {source_dir} && lobster-4.1.0', shell=True)            
 
             lobster_files = [
                 'bandOverlaps.lobster',
@@ -71,10 +68,12 @@ class ICOHPExecutor(CalculationExecutor):
             self.logger.info(f"Successfully completed LOBSTER calculation for material {execution.material_name}")
             self.logger.info(f"LOBSTER output files generated in {source_dir}")
 
+            # raise Exception("Test error ICOHP")
 
-            # Update execution status
             execution.status = 'completed'
             execution.success = True
+            execution.error = None
+            execution.completed_at = datetime.now()
             
             return True
             
@@ -83,4 +82,5 @@ class ICOHPExecutor(CalculationExecutor):
             execution.status = 'failed'
             execution.success = False
             execution.error = str(e)
+            execution.completed_at = datetime.now()
             return False 

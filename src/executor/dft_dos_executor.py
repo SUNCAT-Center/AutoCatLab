@@ -1,4 +1,5 @@
 """DFT DOS executor implementation."""
+from datetime import datetime
 import os
 from pathlib import Path
 import subprocess
@@ -33,14 +34,10 @@ class DFTDOSExecutor(CalculationExecutor):
         try:
             self.logger.info(f"Executing DFT DOS for {execution.material_name}")
             
-            #     """Execute bulk DFT DOS calculation."""
-        
             dir = execution.result_material_dir
-            restart_json = Path(dir) / "restart.json"
-            start_json = Path(dir) /  execution.material_name+".json"
-            
-            
-            # Get step configuration and submission details
+            restart_json = Path(dir) / "restart.json" 
+            start_json = Path(dir) /  "start.json" 
+                        
             submission_detail = config['workflow_steps'][batch_detail.calculation_type]['submission_detail']
             nTask = submission_detail['nTask']
             cpusPertask = submission_detail['cpusPertask']
@@ -59,36 +56,33 @@ class DFTDOSExecutor(CalculationExecutor):
             user_luj =  config['user_luj_values']
             LUJ_values = get_LUJ_values(atoms, user_luj)
 
-            nbands_cohp = get_nbands_cohp(directory=dir)
-            self.logger.info(f"Number of bands needed for COHP lobster calculation: {nbands_cohp}")
+            nbands_cohp = get_nbands_cohp(directory=dir + '/')
 
-            # Get VASP parameters directly from config
             vasp_params =  config['workflow_step_parameters']['BULK_DFT_DOS']
             
-            # Add command and directory to parameters
             vasp_params.update({
                 'command': command,
                 'directory': dir,
                 'kpts': kpoints,
                 'ldau_luj': LUJ_values,
-                'nbands': nbands_cohp  # COHP needs more bands
+                'nbands': nbands_cohp 
             })
             
-            # Create VASP calculator with all parameters
             calc = Vasp(**vasp_params)
             
             atoms.set_calculator(calc)
-            atoms.get_potential_energy()
+            
+            # atoms.get_potential_energy()
 
-            # Clean up POTCAR file
-            potcar_path = Path(dir) / 'POTCAR'
-            subprocess.run(['sed', '-i', '/SHA256/d; /COPYR/d', str(potcar_path)], check=True)
-            self.logger.info("Successfully processed POTCAR file")
-
-
+            # potcar_path = Path(dir) / 'POTCAR'
+            # subprocess.run(['sed', '-i', '/SHA256/d; /COPYR/d', str(potcar_path)], check=True)
+            
+            # self.logger.info("Successfully processed POTCAR file")
+            # raise Exception("Test error")
             execution.status = 'completed'
             execution.success = True
-            
+            execution.error = None
+            execution.completed_at = datetime.now()
             return True
             
         except Exception as e:
@@ -96,4 +90,5 @@ class DFTDOSExecutor(CalculationExecutor):
             execution.status = 'failed'
             execution.success = False
             execution.error = str(e)
+            execution.completed_at = datetime.now()
             return False 

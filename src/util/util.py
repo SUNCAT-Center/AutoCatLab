@@ -109,9 +109,12 @@ def load_default_config() -> Dict[str, Any]:
     config_path = Path(__file__).parent / 'config.json'
     if not config_path.exists():
         raise FileNotFoundError(f"Default configuration file not found at {config_path}")
-
-    with open(config_path, 'r') as f:
-        return json.load(f)
+    try:
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+            return config
+    except json.JSONDecodeError as e:
+        raise ValueError("Please correct the config.json file. It has the following error: {str(e)}")
 
 
 def load_custom_config(config_path: Path) -> Dict[str, Any]:
@@ -144,3 +147,59 @@ def get_config(config_path: Path = None) -> Dict[str, Any]:
     custom_config = load_custom_config(config_path)
     custom_config['config_path'] = config_path.absolute()
     return merge_configs(default_config, custom_config)
+
+def prompt_yes_no(prompt_text: str, default: bool = False) -> bool:
+    """Show a yes/no prompt and return user's choice.
+    
+    Args:
+        prompt_text (str): Text to display in the prompt
+        default (bool, optional): Default value if user just hits enter. 
+            False means default to No. Defaults to False.
+            
+    Returns:
+        bool: True if user chose yes, False if no
+    """
+    while True:
+        # Add [y/N] or [Y/n] suffix based on default
+        suffix = '[y/N]' if not default else '[Y/n]'
+        response = input(f"{prompt_text} {suffix}: ").lower().strip()
+        
+        if not response:  # Empty response, use default
+            return default
+            
+        if response in ['y', 'yes']:
+            return True
+            
+        if response in ['n', 'no']:
+            return False
+            
+        print("Please respond with 'y' or 'n'")
+
+def show_message(message: str, message_type: str = "info") -> None:
+    """Display a formatted message on the terminal.
+    
+    Args:
+        message (str): Message to display
+        message_type (str, optional): Type of message - "info", "warning", "error", or "success". 
+            Defaults to "info".
+    """
+    # ANSI color codes
+    colors = {
+        "info": "\033[94m",     # Blue
+        "warning": "\033[93m",  # Yellow 
+        "error": "\033[91m",    # Red
+        "success": "\033[92m",  # Green
+        "reset": "\033[0m"      # Reset color
+    }
+    
+    prefix = {
+        "info": "INFO",
+        "warning": "WARNING",
+        "error": "ERROR", 
+        "success": "SUCCESS"
+    }
+    
+    if message_type.lower() not in colors:
+        message_type = "info"
+        
+    print(f"{colors[message_type.lower()]}[{prefix[message_type.lower()]}] {message}{colors['reset']}")

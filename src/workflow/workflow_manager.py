@@ -46,9 +46,5 @@ class WorkflowManager:
     
     def run(self, command_step: str = None, args: list[str] = None) -> Any:
       
-        try:
-            command = self.get_command(command_step)
-            return command.execute(args)
-        except Exception as e:
-            self.logger.error(f"Error running workflow: {str(e)}")
-            return False
+        command = self.get_command(command_step)
+        return command.execute(args)

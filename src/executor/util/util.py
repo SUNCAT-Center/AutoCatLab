@@ -15,7 +15,7 @@ import pkgutil
 from .rapidos import RapiDOS
 
 # Load the YAML file from the local directory
-yaml_path = os.path.join(os.path.dirname(__file__), "valence_orbital_mapping.yaml")
+yaml_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "constant", "valence_orbital_mapping.yaml")
 with open(yaml_path, 'r') as f:
     orbital_map = yaml.safe_load(f)
 
