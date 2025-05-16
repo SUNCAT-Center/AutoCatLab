@@ -1,0 +1,68 @@
+Li_sv:  1s 2s 2p
+Na_pv:  2p 3s
+K_sv:   3s 3p 4s
+Ca_sv:  3s 3p 4s
+Sc_sv:  3p 4s 3d
+Ti_sv:  3s 3p 4s 3d
+V_sv:   3s 3p 4s 3d
+Cr_pv:  3p 4s 3d
+Mn_pv:  3p 4s 3d
+Ga_d:   4s 3d 4p
+Ge_d:   3d 4s 4p
+Rb_sv:  4s 4p 5s
+Sr_sv:  4s 4p 5s
+Y_sv:   4s 4p 5s 4d
+Zr_sv:  4s 4p 5s 4d
+Nb_sv:  4s 4p 5s 4d
+Mo_sv:  4p 5s 4d
+Tc_pv:  4p 5s 4d
+Ru_pv:  4p 5s 4d
+Rh_pv:  4p 5s 4d
+In_d:   5s 4d 5p
+Sn_d:   5s 4d 5p
+Cs_sv:  5s 5p 6s
+Ba_sv:  5s 5p 6s
+Pr_3:   5p 6s 4f
+Nd_3:   5p 6s 4f
+Pm_3:   5p 6s 4f
+Sm_3:   5s 5p 6s 4f
+Eu_2:   6s 4f
+Gd_3:   6s 5d 4f
+Tb_3:   4f
+Dy_3:   6s 4f
+Ho_3:   6s 4f
+Er_3:   6s 4f
+Tm_3:   6s 4f
+Yb_2:   4f
+Lu_3:   6s 5d 4f
+Hf_pv:  5p 6s 5d
+Ta_pv:  5p 6s 5d
+W_sv:   5p 6s 5d
+Tl_d:   6s 5d 6p
+Pb_d:   6s 5d 6p
+Bi_d:   6s 5d 6p
+Po_d:   6s 5d 6p
+At_d:   6s 5d 6p
+Fr_sv:  6s 6p 7s
+Ra_sv:  6s 6p 7s
+Fe:     4s 3d
+Co:     4s 3d
+Ni:     4s 3d
+Cu:     4s 3d
+Zn:     4s 3d
+Pd:     5s 4d
+Ag:     5s 4d
+Cd:     5s 4d
+Si:     3s 3p
+Sb:     5s 5p
+Te:     5s 5p
+Re:     6s 5d
+Os:     6s 5d
+Ir:     6s 5d
+Pt:     6s 5d
+Au:     6s 5d
+Hg:     6s 5d
+La:     4f 5s 5p 6s 5d
+O:      2s 2p
+Al:     3s 3p
+As:     4s 4p

@@ -8,6 +8,7 @@ import yaml
 from ase.io import read, write
 from mendeleev import element
 from yaml import Loader
+from pathlib import Path
 
 from ase.data import covalent_radii as cradii
 import pkgutil
@@ -15,8 +16,8 @@ import pkg_resources
 
 from .rapidos import RapiDOS
 
-# Use pkg_resources to locate the YAML file within the installed package
-yaml_path = pkg_resources.resource_filename('AutoCatLab', 'constant/valence_orbital_mapping.yaml')
+# Use Path to locate the YAML file within the installed package
+yaml_path = Path(__file__).parent / 'valence_orbital_mapping.yaml'
 with open(yaml_path, 'r') as f:
     orbital_map = yaml.safe_load(f)
 
