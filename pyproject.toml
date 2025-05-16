@@ -33,8 +33,10 @@ package-dir = {"" = "src"}
 packages = [
     "AutoCatLab",
     "AutoCatLab.workflow",
+    "AutoCatLab.workflow.commands",
     "AutoCatLab.initializer",
     "AutoCatLab.executor",
+    "AutoCatLab.executor.util",
     "AutoCatLab.db",
     "AutoCatLab.util",
     "AutoCatLab.constant",
