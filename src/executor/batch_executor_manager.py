@@ -1,11 +1,10 @@
 """Batch executor manager for workflow."""
 from datetime import datetime
 from typing import Any, Dict, Optional
-from db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
-from .calculation_executor import CalculationExecutor
-from .dft_relax_executor import DFTRelaxExecutor
-from .dft_dos_executor import DFTDOSExecutor
-from .icohp_executor import ICOHPExecutor
+from executor.calculation_executor import CalculationExecutor
+from executor.dft_relax_executor import DFTRelaxExecutor
+from executor.dft_dos_executor import DFTDOSExecutor
+from executor.icohp_executor import ICOHPExecutor
 import traceback
 
 class BatchExecutorManager:

@@ -1,9 +1,7 @@
 """Base command class for workflow commands."""
 from abc import ABC, abstractmethod
 from typing import Any, Dict
-
 from db.models import WorkflowDetail, WorkflowBatchDetail
-
 
 class CommandBase(ABC):
     """Base class for all workflow commands."""

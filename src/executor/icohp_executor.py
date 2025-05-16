@@ -4,9 +4,12 @@ import os
 from pathlib import Path
 import subprocess
 from typing import Any, Dict
+# from db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
+# from executor.util.calculation_helper import write_lobsterIn
+from executor.calculation_executor import CalculationExecutor
+from executor.util.util import write_lobsterIn
 from db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
-from executor.util.calculation_helper import write_lobsterIn
-from .calculation_executor import CalculationExecutor
+
 
 class ICOHPExecutor(CalculationExecutor):
     """Executor for ICOHP calculations."""

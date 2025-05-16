@@ -3,10 +3,10 @@ from datetime import datetime
 import os
 from pathlib import Path
 from typing import Any, Dict
+from executor.util.util import get_initial_magmoms, get_kpoints, get_nbands_cohp, get_LUJ_values, get_restart
 from db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
-from executor.util.util import get_LUJ_values, get_initial_magmoms, get_kpoints, get_restart
 from util.util import copy_file
-from .calculation_executor import CalculationExecutor
+from executor.calculation_executor import CalculationExecutor
 from ase.io import read
 from ase.calculators.vasp import Vasp
 

@@ -1,6 +1,8 @@
-from typing import List, Dict, Optional, Tuple, Union
-from mp_api.client import MPRester
 import json
+from typing import List, Dict
+
+from mp_api.client import MPRester
+
 
 class MPIClient:
     def __init__(self, api_key: str):

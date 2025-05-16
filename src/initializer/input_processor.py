@@ -1,18 +1,19 @@
 """Input processor for AutoCatLab."""
 from datetime import datetime
-import json
 from pathlib import Path
 from typing import Dict, Any
-from client.mpi_api import MPIClient
-from container import Container
-from db.models import WorkflowDetail
-from mp_api.client import MPRester
-from ase.io import read, write
-from pymatgen.io.ase import AseAtomsAdaptor
+
 import ase.db
-import shutil
+from ase.io import read, write
+from mp_api.client import MPRester
 from pymatgen.core import Structure
-from util.util import copy_file, create_directory, prompt_yes_no
+from pymatgen.io.ase import AseAtomsAdaptor
+
+from client.mpi_api import MPIClient
+from container_base import Container
+from db.models import WorkflowDetail
+from util.util import prompt_yes_no, create_directory, copy_file
+
 
 class InputProcessor:
     """Processes input data for calculations."""

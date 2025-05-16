@@ -1,13 +1,13 @@
 """Workflow manager for AutoCatLab."""
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
-from db.models import WorkflowDetail
 from .commands.command_base import CommandBase
+from .commands.command_cleanup_manager import CleanupManager
 from .commands.command_dft_manager import StartDFTManager, ResumeDFTManager
 from .commands.command_icohp_manager import StartICOHPManager, ResumeICOHPManager
 from .commands.command_progress_manager import ShowProgressManager
 from .commands.command_report_manager import ShowReportManager
-from .commands.command_cleanup_manager import CleanupManager
+
 
 class WorkflowManager:
     """Manages workflow execution."""

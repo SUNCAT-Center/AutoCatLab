@@ -4,9 +4,10 @@ import math
 from typing import Dict, Any, List, Tuple
 from pathlib import Path
 
-from container import Container
-from db.models import WorkflowBatchDetail, WorkflowBatchExecution, WorkflowDetail
+from container_base import Container
+from db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
 from util.util import copy_file
+
 
 class BatchProcessor:
     """Processes batches for calculations."""

@@ -1,9 +1,11 @@
 """Job processor for AutoCatLab."""
 from typing import Dict, Any, List
 import subprocess
-from container import Container
+
+from container_base import Container
 from db.models import WorkflowBatchDetail
 from util.util import show_message
+
 
 class JobProcessor:
     """Processes jobs for calculations."""

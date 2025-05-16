@@ -1,9 +1,8 @@
-import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from container_base import Container
-from db.models import WorkflowBatchDetail, WorkflowDetail
+from db.models import WorkflowDetail, WorkflowBatchDetail
 
 
 class JobScriptGenerator:
