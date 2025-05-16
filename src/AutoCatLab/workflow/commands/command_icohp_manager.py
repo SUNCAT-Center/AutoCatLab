@@ -69,10 +69,10 @@ class StartICOHPManager(CommandBase):
                 job_processor = self.container.get('job_processor')
                 
                 batches = batch_processor.process_icohp(workflow_detail, batches, 'icohp')
-                # return job_processor.process('icohp', completed_dft_batches)
                 self.logger.info("ICOHP calculation workflow started")
-                return batches
-                
+                return job_processor.process('icohp', completed_dft_batches)
+
+
             except Exception as e:
                 self.logger.error(f"Error starting ICOHP calculations: {str(e)}")
                 return False
