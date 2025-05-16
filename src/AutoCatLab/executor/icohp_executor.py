@@ -42,7 +42,7 @@ class ICOHPExecutor(CalculationExecutor):
             
             write_lobsterIn(str(source_dir) + '/', config_params=lobster_params)
             
-            # subprocess.call(f'cd {source_dir} && lobster-4.1.0', shell=True)            
+            subprocess.call(f'cd {source_dir} && lobster-4.1.0', shell=True)
 
             lobster_files = [
                 'bandOverlaps.lobster',

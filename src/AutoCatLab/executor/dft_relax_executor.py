@@ -69,7 +69,7 @@ class DFTRelaxExecutor(CalculationExecutor):
             calc = Vasp(**vasp_params)
 
             atoms.set_calculator(calc)
-            # atoms.get_potential_energy()
+            atoms.get_potential_energy()
             get_restart('OUTCAR', dir + '/')
 
             copy_file(Path(dir) / 'WAVECAR', Path(dir) / '../BULK_DFT_DOS/')

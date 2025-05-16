@@ -73,12 +73,12 @@ class DFTDOSExecutor(CalculationExecutor):
             
             atoms.set_calculator(calc)
             
-            # atoms.get_potential_energy()
+            atoms.get_potential_energy()
 
-            # potcar_path = Path(dir) / 'POTCAR'
-            # subprocess.run(['sed', '-i', '/SHA256/d; /COPYR/d', str(potcar_path)], check=True)
+            potcar_path = Path(dir) / 'POTCAR'
+            subprocess.run(['sed', '-i', '/SHA256/d; /COPYR/d', str(potcar_path)], check=True)
             
-            # self.logger.info("Successfully processed POTCAR file")
+            self.logger.info("Successfully processed POTCAR file")
             # raise Exception("Test error")
             execution.status = 'completed'
             execution.success = True
