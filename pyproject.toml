@@ -43,4 +43,8 @@ packages = [
     "AutoCatLab.client",
     "AutoCatLab.validator",
     "AutoCatLab.logger"
-] 
+]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"AutoCatLab.executor.util" = ["*.yaml", "*.json"] 
