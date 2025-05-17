@@ -9,6 +9,7 @@ from ase.io import read
 from ase.calculators.vasp import Vasp
 from AutoCatLab.executor.util.util import get_initial_magmoms, get_kpoints, get_nbands_cohp, get_LUJ_values
 from AutoCatLab.db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
+from AutoCatLab.util.util import get_bool_env
 
 
 class DFTDOSExecutor(CalculationExecutor):
@@ -73,11 +74,14 @@ class DFTDOSExecutor(CalculationExecutor):
             
             atoms.set_calculator(calc)
             
-            atoms.get_potential_energy()
+            if not get_bool_env('local_dev'):
+                atoms.get_potential_energy()
+                potcar_path = Path(dir) / 'POTCAR'
+                subprocess.run(['sed', '-i', '/SHA256/d; /COPYR/d', str(potcar_path)], check=True)
+            else:
+                self.logger.info("Running in local development mode. Skipping DFT DOS.")
 
-            potcar_path = Path(dir) / 'POTCAR'
-            subprocess.run(['sed', '-i', '/SHA256/d; /COPYR/d', str(potcar_path)], check=True)
-            
+
             self.logger.info("Successfully processed POTCAR file")
             # raise Exception("Test error")
             execution.status = 'completed'

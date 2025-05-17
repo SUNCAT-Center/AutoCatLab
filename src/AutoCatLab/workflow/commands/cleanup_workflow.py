@@ -3,9 +3,9 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict
 from AutoCatLab.db.models import WorkflowDetail, WorkflowBatchDetail
-from .command_base import CommandBase
+from .workflow_base import WorkflowBase
 
-class CleanupManager(CommandBase):
+class CleanupManager(WorkflowBase):
     """Manager for cleaning up workflow files and database."""
     
     def validate(self, workflow_detail: WorkflowDetail, workflow_batches: list[WorkflowBatchDetail], args: Dict[str, Any]) -> bool:

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict
 from AutoCatLab.db.models import WorkflowDetail, WorkflowBatchDetail
 
-class CommandBase(ABC):
+class WorkflowBase(ABC):
     """Base class for all workflow commands."""
     
     def __init__(self, container: Any):

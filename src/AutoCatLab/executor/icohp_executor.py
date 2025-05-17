@@ -9,6 +9,7 @@ from typing import Any, Dict
 from AutoCatLab.executor.calculation_executor import CalculationExecutor
 from AutoCatLab.executor.util.util import write_lobsterIn
 from AutoCatLab.db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
+from AutoCatLab.util.util import get_bool_env
 
 
 class ICOHPExecutor(CalculationExecutor):
@@ -42,7 +43,10 @@ class ICOHPExecutor(CalculationExecutor):
             
             write_lobsterIn(str(source_dir) + '/', config_params=lobster_params)
             
-            subprocess.call(f'cd {source_dir} && lobster-4.1.0', shell=True)
+            if not get_bool_env('local_dev'):
+                subprocess.call(f'cd {source_dir} && lobster-4.1.0', shell=True)
+            else:
+                self.logger.info("Running in local development mode. Skipping ICOHP.")
 
             lobster_files = [
                 'bandOverlaps.lobster',

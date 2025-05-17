@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Dict
 from AutoCatLab.executor.util.util import get_initial_magmoms, get_kpoints, get_nbands_cohp, get_LUJ_values, get_restart
 from AutoCatLab.db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
-from AutoCatLab.util.util import copy_file
+from AutoCatLab.util.util import copy_file, get_bool_env
 from AutoCatLab.executor.calculation_executor import CalculationExecutor
 from ase.io import read
 from ase.calculators.vasp import Vasp
@@ -69,7 +69,11 @@ class DFTRelaxExecutor(CalculationExecutor):
             calc = Vasp(**vasp_params)
 
             atoms.set_calculator(calc)
-            atoms.get_potential_energy()
+            if not get_bool_env('local_dev'):
+                atoms.get_potential_energy()
+            else:   
+                self.logger.info("Running in local development mode. Skipping DFT relaxation.")
+            
             get_restart('OUTCAR', dir + '/')
 
             copy_file(Path(dir) / 'WAVECAR', Path(dir) / '../BULK_DFT_DOS/')

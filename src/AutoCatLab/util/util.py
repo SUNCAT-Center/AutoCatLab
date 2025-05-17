@@ -1,6 +1,7 @@
 """Utility functions for AutoCatLab."""
 import json
 import logging
+import os
 import shutil
 from pathlib import Path
 from typing import Dict, Any
@@ -203,3 +204,9 @@ def show_message(message: str, message_type: str = "info") -> None:
         message_type = "info"
         
     print(f"{colors[message_type.lower()]}[{prefix[message_type.lower()]}] {message}{colors['reset']}")
+
+
+def get_bool_env(var_name: str, default: bool = True) -> bool:
+
+    val = os.getenv(var_name, str(default))
+    return val.lower() in ('true')

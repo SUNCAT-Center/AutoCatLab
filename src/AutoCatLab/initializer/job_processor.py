@@ -4,61 +4,48 @@ import subprocess
 
 from AutoCatLab.container_base import Container
 from AutoCatLab.db.models import WorkflowBatchDetail
-from AutoCatLab.util.util import show_message
+from AutoCatLab.util.util import get_bool_env, show_message
 
 
 class JobProcessor:
     """Processes jobs for calculations."""
 
     def __init__(self, container: Container):
-        """Initialize job processor.
-        
-        Args:
-            container (Container): Service container
-        """
         self.container = container
         self.logger = container.get('logger')
         self.config = container.get('config')
 
-    def process(self, calculation: str, batches: List[WorkflowBatchDetail]) -> None:
-        """Process jobs for a calculation.
+    def process(self, batches: List[WorkflowBatchDetail]) -> None:
         
-        Args:
-            calculation (str): Calculation type
-            batches (List[Dict[str, Any]]): List of batch configurations
-        """
-        self.logger.info(f"Processing jobs for {calculation}")
-        failed_batches = []
+        if get_bool_env('local_dev'):
+            self.logger.info("Running in local development mode. Skipping job submission.")
+            # raise Exception("Running in local development mode. Skipping job submission.")
+            return
+        
+
         connector = self.container.get('sqlite_connector')
+        success = True
         for batch in batches:
             try:
-
-                # Submit job using sbatch
                 result = subprocess.run(['sbatch', str(batch.script_path)],
-                                    capture_output=True,
+                                    stdout=subprocess.DEVNULL,
+                                    stderr=subprocess.DEVNULL,
                                     text=True)
-                print("result are", result)
-                # result = {
-                #     "returncode": 0,
-                #     "stdout": "Submitted batch job 12345"
-                # }
-                if result.returncode == 0:
-                # if result["returncode"] == 0:
-                    # Parse job ID from output (format: "Submitted batch job 12345")
+                if result.returncode == 0:               
                     job_id = result.stdout.strip().split()[-1]
-                    # job_id = result["stdout"].strip().split()[-1]
                     self.container.get('batch_crud').update_batch(
                         connector.get_session(),
                         batch.batch_id,
                         {'job_id': job_id}
                     )
                 else:
-                    failed_batches.append(batch)
+                    success = False
                     raise Exception(f"Job submission failed: {result.stderr}")
 
             except Exception as e:
                 self.logger.error(f"Failed to submit batch {batch.batch_id}: {str(e)}")
                 raise
-        if not failed_batches:
+
+        if success:
             show_message("All jobs submitted successfully", "success")
             self.logger.info("All jobs submitted successfully")

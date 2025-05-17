@@ -85,6 +85,13 @@ class BatchProcessor:
 
         return batches, workflow_batch_executions
 
+    
+    def update_batch_scripts(self, workflow_detail: WorkflowDetail, batches: List[WorkflowBatchDetail]) -> None:
+        for batch in batches:
+            self.job_script_generator.generate_script(workflow_detail, batch)
+            
+
+
     def process_icohp(self, workflow_detail: WorkflowDetail, batches: List[WorkflowBatchDetail], calculation: str) -> \
     Tuple[List[WorkflowBatchDetail], List[WorkflowBatchExecution]]:
 

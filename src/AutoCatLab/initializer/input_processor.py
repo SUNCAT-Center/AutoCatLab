@@ -38,7 +38,7 @@ class InputProcessor:
         Returns:
             Filename with timestamp suffix
         """
-        return f"{original_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        return original_name
         
     def process(self, workflow_detail: WorkflowDetail) -> list[Dict[str, Any]]:
         """Process input for a calculation.
@@ -65,17 +65,23 @@ class InputProcessor:
             case _:
                 raise ValueError(f"Unsupported input type: {self.config['workflow_input']['type']}")
 
-        if not prompt_yes_no(f"Found {len(failed_input)} failed inputs. Continue anyway? [y/N]: "):
-            raise ValueError("Aborting due to failed inputs")
-        else:
-            for material in materials:
-                create_directory(material['raw_file_path'].parent)
-                create_directory(material['json_file_path'].parent)
-                if self.config['workflow_input']['type'] == "location":
-                    copy_file(material['raw_file'], material['raw_file_path'])
-                else:
-                    write(str(material['raw_file_path']), material['structure'], format='cif')
-                write(str(material['json_file_path']), material['structure'], format='json')
+
+        if len(materials) == 0 :
+            self.logger.error(f"No valid materials found in input directory. Please check the input directory and try again.")
+            raise ValueError("No valid materials found in input directory")
+        
+        if len(failed_input) > 0:
+            self.logger.error(f"Failed to process {len(failed_input)} files. Please correct the files and try again.")
+            raise ValueError("Failed to process some files in input directory")
+        
+        for material in materials:
+            create_directory(material['raw_file_path'].parent)
+            create_directory(material['json_file_path'].parent)
+            if self.config['workflow_input']['type'] == "location":
+                copy_file(material['raw_file'], material['raw_file_path'])
+            else:
+                write(str(material['raw_file_path']), material['structure'], format='cif')
+            write(str(material['json_file_path']), material['structure'], format='json')
         self.logger.info(f"Processed {len(materials)} materials")
         return materials
                  
@@ -108,8 +114,7 @@ class InputProcessor:
                 except Exception as e:
                     self.logger.warning(f"Error processing file {file}: {str(e)}")
                     failed_files.append(str(file))
-        if not materials:
-            raise ValueError("No valid materials found in input directory")
+        
         return materials, failed_files
 
     def _process_mp_input(self) -> list[Dict[str, Any]]:

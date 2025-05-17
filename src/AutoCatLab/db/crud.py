@@ -22,8 +22,6 @@ class WorkflowCRUD:
             error=None
         )
         db.add(workflow)
-        db.commit()
-        db.refresh(workflow)
         return workflow
     
     @staticmethod
@@ -61,8 +59,8 @@ class BatchCRUD:
             start_time=datetime.now()
         )
         db.add(batch)
-        db.commit()
-        db.refresh(batch)
+        db.flush()  # This will generate the batch_id without committing
+        db.refresh(batch)  # Refresh to ensure all attributes are loaded
         return batch
     
     @staticmethod
@@ -82,8 +80,6 @@ class BatchCRUD:
         batch = BatchCRUD.get_batch(db, batch_id)
         if batch:
             batch.job_id = batch_data['job_id']
-            db.commit()
-            db.refresh(batch)
         return batch
 
 class ExecutionCRUD:
@@ -102,8 +98,6 @@ class ExecutionCRUD:
             start_time=datetime.now()
         )
         db.add(execution)
-        db.commit()
-        db.refresh(execution)
         return execution
     
     

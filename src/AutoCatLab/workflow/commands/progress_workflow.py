@@ -1,9 +1,9 @@
 """Progress command manager for workflow."""
 from typing import Any, Dict
 from AutoCatLab.db.models import WorkflowBatchDetail, WorkflowDetail
-from .command_base import CommandBase
+from .workflow_base import WorkflowBase
 
-class ShowProgressManager(CommandBase):
+class ShowProgressManager(WorkflowBase):
     """Manager for showing workflow progress."""
     
     def validate(self, workflow_detail: WorkflowDetail, workflow_batches: list[WorkflowBatchDetail], args: Dict[str, Any]) -> bool:

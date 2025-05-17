@@ -1,9 +1,9 @@
 """Report command manager for workflow."""
 from typing import Any, Dict
 from AutoCatLab.db.models import WorkflowBatchDetail, WorkflowDetail
-from .command_base import CommandBase
+from .workflow_base import WorkflowBase
 
-class ShowReportManager(CommandBase):
+class ShowReportManager(WorkflowBase):
     """Manager for showing workflow reports."""
     
     def validate(self, workflow_detail: WorkflowDetail, workflow_batches: list[WorkflowBatchDetail], args: Dict[str, Any]) -> bool:
