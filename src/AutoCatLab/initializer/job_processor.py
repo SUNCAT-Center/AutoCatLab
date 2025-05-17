@@ -29,8 +29,6 @@ class JobProcessor:
             try:
                 result = subprocess.run(['sbatch', str(batch.script_path)],
                                     capture_output=True,
-                                    stdout=subprocess.DEVNULL,
-                                    stderr=subprocess.DEVNULL,
                                     text=True)
                 if result.returncode == 0:               
                     job_id = result.stdout.strip().split()[-1]
