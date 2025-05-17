@@ -56,8 +56,8 @@ class StartICOHPManager(WorkflowBase):
                 batch_processor = self.container.get('batch_processor')
                 job_processor = self.container.get('job_processor')
                 
-                batches = batch_processor.process_icohp(workflow_detail, batches, 'icohp')
-                results = job_processor.process(completed_dft_batches)
+                icohp_batches, executions = batch_processor.process_icohp(workflow_detail, completed_dft_batches, 'icohp')
+                results = job_processor.process(icohp_batches)
                 connector.get_session().commit()
                 return results
 
