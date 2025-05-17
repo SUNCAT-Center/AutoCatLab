@@ -31,7 +31,10 @@ class StartICOHPManager(CommandBase):
         if not completed_dft_batches:
             self.logger.error("No completed DFT batches found")
             return False
-            
+        
+        if not prompt_yes_no(f"Found {len(completed_dft_batches)} eligble ICOHP batches. Do you want to run ICOHP for them? [y/N]: "):
+            return False  
+    
         return True
     
     def execute(self, args: Dict[str, Any]) -> Any:
