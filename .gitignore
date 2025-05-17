@@ -8,3 +8,7 @@ __pycache__/
 **/__pycache__/
 **/*.py[cod]
 **/*$py.class
+
+.DS_Store
+src/.DS_Store
+src/AutoCatLab/.DS_Store
