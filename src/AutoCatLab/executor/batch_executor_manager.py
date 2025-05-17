@@ -32,7 +32,9 @@ class BatchExecutorManager:
         calculation_map = {
             'BULK_DFT_RELAX': DFTRelaxExecutor,
             'BULK_DFT_DOS': DFTDOSExecutor,
-            'BULK_ICOHP': ICOHPExecutor
+            'BULK_ICOHP': ICOHPExecutor,
+            'SURFACE_DFT_RELAX': DFTRelaxExecutor,
+            'SURFACE_DFT_DOS': DFTDOSExecutor
         }
         
         executor_class = calculation_map.get(calculation_name)
