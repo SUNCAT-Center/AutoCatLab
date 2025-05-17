@@ -1,6 +1,7 @@
 """ICOHP command managers for workflow."""
 from typing import Any, Dict
 from AutoCatLab.db.models import WorkflowBatchDetail, WorkflowDetail
+from AutoCatLab.util.util import prompt_yes_no
 from .command_base import CommandBase
 
 class StartICOHPManager(CommandBase):
@@ -101,7 +102,10 @@ class ResumeICOHPManager(CommandBase):
         if not resume_batches:
             self.logger.error("No incomplete ICOHP batches found")
             return False
-            
+
+        if not prompt_yes_no(f"Found {len(resume_batches)} resumable ICOHP batches. Do you want to resume them? [y/N]: "):
+            return False   
+        
         return True
     
     def execute(self, args: Dict[str, Any]) -> Any:

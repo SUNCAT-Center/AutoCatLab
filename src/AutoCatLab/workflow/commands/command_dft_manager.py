@@ -1,6 +1,7 @@
 """DFT command managers for workflow."""
 from typing import Any, Dict
 from AutoCatLab.db.models import WorkflowBatchDetail, WorkflowDetail
+from AutoCatLab.util.util import prompt_yes_no
 from .command_base import CommandBase
 
 class StartDFTManager(CommandBase):
@@ -34,7 +35,7 @@ class StartDFTManager(CommandBase):
 
                 if not self.validate(workflow_detail, [], args):
                     return False
-
+        
                 workflow_data = {
                     'calc_unique_name': self.container.get('config')['workflow_name'],
                     'config_path': str(self.container.get('config')['config_path'])
@@ -79,7 +80,10 @@ class ResumeDFTManager(CommandBase):
         if not resume_batches:
             self.logger.error("No incomplete DFT batches found")
             return False
-            
+        
+        if not prompt_yes_no(f"Found {len(resume_batches)} resumable DFT batches. Do you want to resume them? [y/N]: "):
+            return False
+        
         return True
     
     def execute(self, args: Dict[str, Any]) -> Any:
