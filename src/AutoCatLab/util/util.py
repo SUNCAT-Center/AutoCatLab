@@ -206,7 +206,7 @@ def show_message(message: str, message_type: str = "info") -> None:
     print(f"{colors[message_type.lower()]}[{prefix[message_type.lower()]}] {message}{colors['reset']}")
 
 
-def get_bool_env(var_name: str, default: bool = True) -> bool:
+def get_bool_env(var_name: str, default: bool = False) -> bool:
 
     val = os.getenv(var_name, str(default))
     return val.lower() in ('true')
