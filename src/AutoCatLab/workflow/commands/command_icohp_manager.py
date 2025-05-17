@@ -137,7 +137,7 @@ class ResumeICOHPManager(CommandBase):
                     return False
                     
                 resume_batches = [batch for batch in batches 
-                                if batch.status != 'completed' and batch.status != 'running' and batch.calculation_type == 'icohp']
+                                if batch.status != 'completed' and batch.calculation_type == 'icohp']
             
                 job_processor = self.container.get('job_processor')
                 
