@@ -39,12 +39,13 @@ class DFTDOSExecutor(CalculationExecutor):
             dir = execution.result_material_dir
             restart_json = Path(dir) / "restart.json" 
             start_json = Path(dir) /  "start.json" 
-                        
+            calculation_name = execution.calculation_name
             submission_detail = config['workflow_steps'][batch_detail.calculation_type]['submission_detail']
             nTask = submission_detail['nTask']
             cpusPertask = submission_detail['cpusPertask']
             gpu = submission_detail['gpu']
-            
+            is_bulk = "BULK" in calculation_name 
+
             command = 'srun -n ' + str(nTask) + ' -c ' + str(cpusPertask) + ' --cpu-bind=cores --gpu-bind=none -G ' + str(gpu) + ' vasp_std'
             
             if os.path.exists(restart_json):
@@ -54,13 +55,13 @@ class DFTDOSExecutor(CalculationExecutor):
                 initial_magmoms = get_initial_magmoms(atoms)
                 atoms.set_initial_magnetic_moments(initial_magmoms)
     
-            kpoints = get_kpoints(atoms, effective_length=60, bulk=True)
+            kpoints = get_kpoints(atoms, effective_length=60, bulk=is_bulk)
             user_luj =  config['user_luj_values']
             LUJ_values = get_LUJ_values(atoms, user_luj)
 
             nbands_cohp = get_nbands_cohp(directory=dir + '/')
 
-            vasp_params =  config['workflow_step_parameters']['BULK_DFT_DOS']
+            vasp_params =  config['workflow_step_parameters'][calculation_name]
             
             vasp_params.update({
                 'command': command,

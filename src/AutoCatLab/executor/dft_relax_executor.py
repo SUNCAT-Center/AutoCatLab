@@ -36,7 +36,8 @@ class DFTRelaxExecutor(CalculationExecutor):
 
             dir = execution.result_material_dir
             start_json = Path(dir) /  "start.json"
-
+            calculation_name = execution.calculation_name
+            is_bulk = "BULK" in calculation_name 
             # Get step configuration and submission details
             submission_detail = config['workflow_steps'][batch_detail.calculation_type]['submission_detail']
             nTask = submission_detail['nTask']
@@ -51,12 +52,12 @@ class DFTRelaxExecutor(CalculationExecutor):
             atoms.set_initial_magnetic_moments(initial_magmoms)
 
 
-            kpoints = get_kpoints(atoms, effective_length=30, bulk=True)
+            kpoints = get_kpoints(atoms, effective_length=30, bulk=is_bulk)
             user_luj = config['user_luj_values']
             LUJ_values = get_LUJ_values(atoms, user_luj)
 
             # Get VASP parameters directly from config
-            vasp_params =  config['workflow_step_parameters']['BULK_DFT_RELAX']
+            vasp_params =  config['workflow_step_parameters'][calculation_name]
 
             # Add command and directory to parameters
             vasp_params.update({
@@ -75,11 +76,17 @@ class DFTRelaxExecutor(CalculationExecutor):
                 self.logger.info("Running in local development mode. Skipping DFT relaxation.")
             
             get_restart('OUTCAR', dir + '/')
+            
+            dos_dir_name = 'BULK_DFT_DOS'
+            
+            if not is_bulk:
+                dos_dir_name = 'SURFACE_DFT_DOS'
 
-            copy_file(Path(dir) / 'WAVECAR', Path(dir) / '../BULK_DFT_DOS/')
-            copy_file(Path(dir) / 'POTCAR', Path(dir) / '../BULK_DFT_DOS/')
-            copy_file(Path(dir) / 'POSCAR', Path(dir) / '../BULK_DFT_DOS/')
-            copy_file(Path(dir) / 'restart.json', Path(dir) / '../BULK_DFT_DOS/restart.json')
+
+            copy_file(Path(dir) / 'WAVECAR', Path(dir) / f'../{dos_dir_name}/')
+            copy_file(Path(dir) / 'POTCAR', Path(dir) / f'../{dos_dir_name}/')
+            copy_file(Path(dir) / 'POSCAR', Path(dir) / f'../{dos_dir_name}/')
+            copy_file(Path(dir) / 'restart.json', Path(dir) / f'../{dos_dir_name}/restart.json')
 
             # raise Exception("Test error DOS")
 
