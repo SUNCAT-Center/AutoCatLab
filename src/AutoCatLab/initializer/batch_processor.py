@@ -89,45 +89,44 @@ class BatchProcessor:
     Tuple[List[WorkflowBatchDetail], List[WorkflowBatchExecution]]:
 
         self.logger.info(f"Processing batches for {calculation}")
+        connector =  self.container.get('sqlite_connector')
+        created_batches = []
+        for batch in batches:
+            batch_script_dir_name = batch.result_batch_dir.split('/')[-1]
+            batch_script_path = batch.script_path.replace(batch.calculation_type, 'icohp')
+            materials = json.loads(batch.materials)
+            workflow_batch_data = {
+                'workflow_unique_name': workflow_detail.calc_unique_name,
+                'calculation_type': calculation,
+                'materials': materials,
+                'result_batch_dir': Path(batch.result_batch_dir).parent / batch_script_dir_name,
+                'script_path': batch_script_path
+            }
 
-        with self.container.get('sqlite_connector') as connector:
-            created_batches = []
-            for batch in batches:
-                batch_script_dir_name = batch.result_batch_dir.split('/')[-1]
-                batch_script_path = batch.script_path.replace(batch.calculation_type, 'icohp')
-                materials = json.loads(batch.materials)
-                workflow_batch_data = {
-                    'workflow_unique_name': workflow_detail.calc_unique_name,
-                    'calculation_type': calculation,
-                    'materials': materials,
-                    'result_batch_dir': Path(batch.result_batch_dir).parent / batch_script_dir_name,
-                    'script_path': batch_script_path
-                }
+            workflow_batch_detail = self.batch_crud.create_batch(connector.get_session(), workflow_batch_data)
 
-                workflow_batch_detail = self.batch_crud.create_batch(connector.get_session(), workflow_batch_data)
+            script_path = self.job_script_generator.generate_script(workflow_detail, workflow_batch_detail)
+            workflow_batch_executions = []
+            for material in materials:
+                material_dir = Path(workflow_batch_detail.result_batch_dir) / material
+                for calculation_step in self.config['workflow_steps'][calculation]['calculations']:
+                    calculation_step_dir = material_dir / calculation_step
+                    calculation_step_dir.mkdir(parents=True, exist_ok=True)
+                    if calculation_step in ['BULK_DFT_RELAX', 'SURFACE_DFT_RELAX', 'POINT_DFT_RELAX']:
+                        copy_file(material['json_file_path'], calculation_step_dir / 'start.json')
 
-                script_path = self.job_script_generator.generate_script(workflow_detail, workflow_batch_detail)
-                workflow_batch_executions = []
-                for material in materials:
-                    material_dir = Path(workflow_batch_detail.result_batch_dir) / material
-                    for calculation_step in self.config['workflow_steps'][calculation]['calculations']:
-                        calculation_step_dir = material_dir / calculation_step
-                        calculation_step_dir.mkdir(parents=True, exist_ok=True)
-                        if calculation_step in ['BULK_DFT_RELAX', 'SURFACE_DFT_RELAX', 'POINT_DFT_RELAX']:
-                            copy_file(material['json_file_path'], calculation_step_dir / 'start.json')
+                    workflow_batch_execution_data = {
+                        'workflow_unique_name': workflow_detail.calc_unique_name,
+                        'batch_id': workflow_batch_detail.batch_id,
+                        'material_name': material,
+                        'result_material_dir': str(calculation_step_dir),
+                        'calculation_name': calculation_step,
+                        'script_path': script_path
+                    }
 
-                        workflow_batch_execution_data = {
-                            'workflow_unique_name': workflow_detail.calc_unique_name,
-                            'batch_id': workflow_batch_detail.batch_id,
-                            'material_name': material,
-                            'result_material_dir': str(calculation_step_dir),
-                            'calculation_name': calculation_step,
-                            'script_path': script_path
-                        }
-
-                        workflow_batch_execution = self.execution_crud.create_execution(connector.get_session(),
-                                                                                        workflow_batch_execution_data)
-                        workflow_batch_executions.append(workflow_batch_execution)
-                created_batches.append(workflow_batch_detail)
+                    workflow_batch_execution = self.execution_crud.create_execution(connector.get_session(),
+                                                                                    workflow_batch_execution_data)
+                    workflow_batch_executions.append(workflow_batch_execution)
+            created_batches.append(workflow_batch_detail)
 
         return created_batches, workflow_batch_executions
