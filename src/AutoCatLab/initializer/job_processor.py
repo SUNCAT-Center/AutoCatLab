@@ -28,6 +28,7 @@ class JobProcessor:
         for batch in batches:
             try:
                 result = subprocess.run(['sbatch', str(batch.script_path)],
+                                    capture_output=True,
                                     stdout=subprocess.DEVNULL,
                                     stderr=subprocess.DEVNULL,
                                     text=True)
