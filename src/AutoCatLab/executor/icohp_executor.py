@@ -1,4 +1,5 @@
 """ICOHP executor implementation."""
+import traceback
 from datetime import datetime
 import os
 from pathlib import Path
@@ -86,6 +87,7 @@ class ICOHPExecutor(CalculationExecutor):
             
         except Exception as e:
             self.logger.error(f"Error executing ICOHP: {str(e)}")
+            self.logger.error("".join(traceback.format_exc()))
             execution.status = 'failed'
             execution.success = False
             execution.error = str(e)
