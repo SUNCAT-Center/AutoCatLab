@@ -101,8 +101,8 @@ class InputProcessor:
             for file in files:
                 try:
                     timestamped_name = self._get_timestamped_name(file.stem)   
-                    raw_file_path = Path(self.config['workflow_output_directory']) / self.config['workflow_name'] / 'input' / 'raw' / f"{timestamped_name}{file.suffix}"
-                    json_file_path = Path(self.config['workflow_output_directory']) / self.config['workflow_name'] / 'input' / 'processed' / f"{timestamped_name}.json"
+                    raw_file_path = Path(self.config['workflow_output_directory']) / self.config['workflow_unique_name'] / 'input' / 'raw' / f"{timestamped_name}{file.suffix}"
+                    json_file_path = Path(self.config['workflow_output_directory']) / self.config['workflow_unique_name'] / 'input' / 'processed' / f"{timestamped_name}.json"
 
                     materials.append({
                         "name": timestamped_name,
@@ -225,8 +225,8 @@ class InputProcessor:
                 formula = atoms.get_chemical_formula()
                 
                 
-                raw_file_path =  self.config['workflow_output_directory'] / self.config['workflow_name'] / 'input' / 'raw' / f"{timestamped_id}_{formula}.xyz"
-                json_file_path = self.config['workflow_output_directory'] / self.config['workflow_name'] / 'input' / 'processed' / f"{timestamped_id}.json"                    
+                raw_file_path =  self.config['workflow_output_directory'] / self.config['workflow_unique_name'] / 'input' / 'raw' / f"{timestamped_id}_{formula}.xyz"
+                json_file_path = self.config['workflow_output_directory'] / self.config['workflow_unique_name'] / 'input' / 'processed' / f"{timestamped_id}.json"
                 
 
                 materials.append({
