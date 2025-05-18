@@ -39,7 +39,7 @@ class StartICOHPManager(WorkflowBase):
 
                 workflow_detail = self.container.get('workflow_crud').get_workflow(
                     connector.get_session(),
-                    self.container.get('config')['workflow_name']
+                    self.container.get('config')['workflow_unique_name']
                 )
 
                 batches = self.container.get('batch_crud').get_batches(

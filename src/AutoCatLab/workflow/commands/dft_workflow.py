@@ -21,7 +21,7 @@ class StartDFTManager(WorkflowBase):
                 self.logger.info("Starting DFT calculation workflow")
                 workflow_detail = self.container.get('workflow_crud').get_workflow(
                     connector.get_session(),
-                    self.container.get('config')['workflow_name']
+                    self.container.get('config')['workflow_unique_name']
                 )
 
                 if not self.validate(workflow_detail, [], args):
