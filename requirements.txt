@@ -12,5 +12,4 @@ spglib~=2.6.0
 PyYAML~=6.0.2
 mendeleev~=1.0.0
 scipy~=1.15.3
-CatKit~=0.5.4
 setuptools~=65.5.0
