@@ -28,7 +28,7 @@ class StartDFTManager(WorkflowBase):
                     return False
         
                 workflow_data = {
-                    'calc_unique_name': self.container.get('config')['workflow_name'],
+                    'calc_unique_name': self.container.get('config')['workflow_unique_name'],
                     'config_path': str(self.container.get('config')['config_path'])
                 }
                 workflow_detail = self.container.get('workflow_crud').create_workflow(
