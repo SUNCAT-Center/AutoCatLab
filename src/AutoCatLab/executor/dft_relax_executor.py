@@ -51,6 +51,8 @@ class DFTRelaxExecutor(CalculationExecutor):
             atoms = read(start_json)
             initial_magmoms = get_initial_magmoms(atoms)
             atoms.set_initial_magnetic_moments(initial_magmoms)
+            if not is_bulk:
+                atoms.pbc = [1,1,1]
 
 
             kpoints = get_kpoints(atoms, effective_length=30, bulk=is_bulk)
