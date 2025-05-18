@@ -8,6 +8,8 @@ from typing import Dict, Any
 from typing import Optional
 from typing import Union
 
+from sympy import false
+
 
 def copy_file(src: Union[str, Path], dst: Union[str, Path]) -> None:
     """Copy a file from source to destination.
@@ -147,6 +149,17 @@ def get_config(config_path: Path = None) -> Dict[str, Any]:
     
     custom_config = load_custom_config(config_path)
     custom_config['config_path'] = config_path.absolute()
+    is_bulk = False
+    is_surface = False
+    for calculation_name in custom_config['workflow_steps']['dft']['calculations']:
+        if "BULK" in calculation_name:
+            is_bulk = True
+
+        if "SURFACE" in calculation_name:
+            is_surface = True
+
+    is_bulk_surface = is_bulk and is_surface
+    custom_config['is_bulk_surface'] = is_bulk_surface
     return merge_configs(default_config, custom_config)
 
 def prompt_yes_no(prompt_text: str, default: bool = False) -> bool:

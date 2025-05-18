@@ -46,5 +46,5 @@ class WorkflowManager:
     
     def run(self, command_step: str = None, args: list[str] = None) -> Any:
       
-        command = self.get_command(command_step)
-        return command.execute(args)
+        command_obj = self.get_command(command_step)
+        return command_obj.execute(args)

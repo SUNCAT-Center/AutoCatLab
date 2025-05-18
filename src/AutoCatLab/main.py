@@ -18,6 +18,7 @@ def cleanup(config: str):
     except Exception as e:
         raise click.Abort()
 
+# autocatlab start-dft --config config.json
 @cli.command()
 @click.option('--config', required=True, help='Path to the configuration file')
 def start_dft(config: str):

@@ -64,6 +64,13 @@ class BatchProcessor:
             for material in batch_data:
                 material_dir = Path(workflow_batch_detail.result_batch_dir) / material['name']
                 for calculation_step in self.config['workflow_steps'][calculation]['calculations']:
+
+                    if self.config['is_bulk_surface']:
+                        if "_SURFACE_" in material['name'] and "BULK" in calculation_step:
+                            continue
+                        if "_SURFACE_" not in material['name'] and "SURFACE" in calculation_step:
+                            continue
+
                     calculation_step_dir = material_dir / calculation_step
                     calculation_step_dir.mkdir(parents=True, exist_ok=True)
                     if calculation_step in ['BULK_DFT_RELAX', 'SURFACE_DFT_RELAX', 'POINT_DFT_RELAX']:

@@ -13,7 +13,7 @@ from AutoCatLab.client.mpi_api import MPIClient
 from AutoCatLab.container_base import Container
 from AutoCatLab.db.models import WorkflowDetail
 from AutoCatLab.util.util import prompt_yes_no, create_directory, copy_file
-
+from catkit.gen.surface import SlabGenerator
 
 class InputProcessor:
     """Processes input data for calculations."""
@@ -52,7 +52,6 @@ class InputProcessor:
         """
         self.logger.info(f"Processing input for {workflow_detail.calc_unique_name}")
         materials , failed_input = None, []
-        
         match self.config['workflow_input']['type']:
             case "location":
                 materials , failed_input = self._process_location_input()
@@ -85,10 +84,38 @@ class InputProcessor:
         self.logger.info(f"Processed {len(materials)} materials")
         return materials
                  
-        
+    def generate_surface_input_files(self):
+        input_dir = Path(self.config['workflow_input']['value'])
+        thickness = 12
+        for ext in [".cif",".json"]:
+            files = list(input_dir.glob(f"*{ext}"))
+            for file in files:
+                atoms = read(str(file))
+                for miller in [(1, 0, 0), (0, 1, 0), (1, 1, 0), (1, 1, 1), (2, 1, 1)]:
+                    miller_str = ''.join(map(str, miller))  # Convert (1,0,0) to "100"
+                    gen = SlabGenerator(
+                        atoms,
+                        miller_index=miller,
+                        layers=thickness,
+                        layer_type='ang',
+                        standardize_bulk=True,
+                        symmetric=True,
+                        stoich=True,
+                        fixed=0,
+                        vacuum=7.5)
+
+                    miller_slabs = gen.get_slabs()
+
+                    for i, slab in enumerate(miller_slabs):
+                        file_name = file.stem + f"_SURFACE_{miller_str}_{i + 1}"
+                        file_path= Path(self.config['workflow_input']['value'])/ f"{file_name}.json"
+                        write(file_path, slab)
+
     def _process_location_input(self) -> tuple[list[Dict[str, Any]], list[str]]:
         """Process location input."""
-        
+        if self.config['is_bulk_surface']:
+            self.generate_surface_input_files()
+
         input_dir = Path(self.config['workflow_input']['value'])
         if not input_dir.exists():
             raise ValueError(f"Input directory does not exist: {input_dir}")
