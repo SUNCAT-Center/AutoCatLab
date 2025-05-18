@@ -39,7 +39,6 @@ class DFTDOSExecutor(CalculationExecutor):
 
             dir = execution.result_material_dir
             restart_json = Path(dir) / "restart.json"
-            start_json = Path(dir) / "start.json"
             calculation_name = execution.calculation_name
             submission_detail = config['workflow_steps'][batch_detail.calculation_type]['submission_detail']
             nTask = submission_detail['nTask']
@@ -50,7 +49,7 @@ class DFTDOSExecutor(CalculationExecutor):
             command = 'srun -n ' + str(nTask) + ' -c ' + str(
                 cpusPertask) + ' --cpu-bind=cores --gpu-bind=none -G ' + str(gpu) + ' vasp_std'
 
-            atoms = read(start_json)
+            atoms = read(restart_json)
             initial_magmoms = get_initial_magmoms(atoms)
             atoms.set_initial_magnetic_moments(initial_magmoms)
             if not is_bulk:
