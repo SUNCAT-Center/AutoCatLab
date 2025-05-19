@@ -86,6 +86,8 @@ class InputProcessor:
                  
     def generate_surface_input_files(self):
         input_dir = Path(self.config['workflow_input']['value'])
+        new_input_dir = input_dir.parent/'new_input_directory'
+        create_directory(new_input_dir)
         thickness = 12
         for ext in [".cif",".json"]:
             files = list(input_dir.glob(f"*{ext}"))
@@ -108,8 +110,10 @@ class InputProcessor:
 
                     for i, slab in enumerate(miller_slabs):
                         file_name = file.stem + f"_SURFACE_{miller_str}_{i + 1}"
-                        file_path= Path(self.config['workflow_input']['value'])/ f"{file_name}.json"
+                        file_path= new_input_dir / f"{file_name}.json"
                         write(file_path, slab)
+                    copy_file(file, new_input_dir)
+        self.config['workflow_input']['value'] = new_input_dir
 
     def _process_location_input(self) -> tuple[list[Dict[str, Any]], list[str]]:
         """Process location input."""
