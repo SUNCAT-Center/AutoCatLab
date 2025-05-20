@@ -1,19 +1,21 @@
 """Input processor for AutoCatLab."""
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Tuple, List
 
 import ase.db
+from ase import Atoms
 from ase.io import read, write
 from mp_api.client import MPRester
 from pymatgen.core import Structure
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.io.ase import AseAtomsAdaptor, MSONAtoms, Atoms
 
 from AutoCatLab.client.mpi_api import MPIClient
 from AutoCatLab.container_base import Container
 from AutoCatLab.db.models import WorkflowDetail
 from AutoCatLab.util.util import prompt_yes_no, create_directory, copy_file
 from catkit.gen.surface import SlabGenerator
+
 
 class InputProcessor:
     """Processes input data for calculations."""
@@ -60,7 +62,7 @@ class InputProcessor:
             case "mpi_custom_query":
                 materials , failed_input = self._process_mpi_custom_query()
             case "ase_db":
-                materials , failed_input = self._process_ase_db_input()
+                materials, failed_input = self._process_ase_db_input()
             case _:
                 raise ValueError(f"Unsupported input type: {self.config['workflow_input']['type']}")
 
@@ -194,17 +196,18 @@ class InputProcessor:
             
             return materials, failed_ids
 
-    def _process_mpi_custom_query(self) -> list[Dict[str, Any]]:
+    def _process_mpi_custom_query(self) -> tuple[
+        list[dict[str, str | MSONAtoms | Atoms | Atoms | Any]], list[str | Any]]:
         """
         Process input from MPI custom query.
         
         Returns:
             List of material dictionaries
         """
-        if not self.config['workflow_input']['mpi_api_key']:
+        if not self.config['workflow_input']['mp_api_key']:
             raise ValueError("MPI API key is required for MPI custom query input type")
               
-        client = MPIClient(api_key=self.config['workflow_input']['mpi_api_key'])
+        client = MPIClient(api_key=self.config['workflow_input']['mp_api_key'])
             
         results = client.execute_query(self.config['workflow_input']['value'])
         
@@ -231,7 +234,7 @@ class InputProcessor:
                 
             except Exception as e:
                 self.logger.warning(f"Error processing MPI query result {idx}: {str(e)}")
-                failed_ids.append(material_id)
+                failed_ids.append(idx)
                 continue
         
         if not materials:
@@ -239,20 +242,21 @@ class InputProcessor:
         
         return materials, failed_ids
 
-    def _process_ase_db_input(self) -> list[Dict[str, Any]]:
+    def _process_ase_db_input(self) -> tuple[list[dict[str, str | Path | Any]], list[Any]]:
         """
         Process input from ASE database.
         
         Returns:
             List of material dictionaries
         """
-        if not self.directory_manager:
-            raise ValueError("Directory manager is required for processing ASE DB input")
+        # if not self.directory_manager:
+        #     raise ValueError("Directory manager is required for processing ASE DB input")
             
         db = ase.db.connect(self.config['workflow_input']['value'])
             
         # Get all structures from database
         materials = []
+        failed_input = []
         for row in db.select():
             try:
                 atoms = row.toatoms()
@@ -261,9 +265,14 @@ class InputProcessor:
                 formula = atoms.get_chemical_formula()
                 
                 
-                raw_file_path =  self.config['workflow_output_directory'] / self.config['workflow_unique_name'] / 'input' / 'raw' / f"{timestamped_id}_{formula}.xyz"
-                json_file_path = self.config['workflow_output_directory'] / self.config['workflow_unique_name'] / 'input' / 'processed' / f"{timestamped_id}.json"
-                
+                # raw_file_path =  self.config['workflow_output_directory'] / self.config['workflow_unique_name'] / 'input' / 'raw' / f"{timestamped_id}_{formula}.xyz"
+                # json_file_path = self.config['workflow_output_directory'] / self.config['workflow_unique_name'] / 'input' / 'processed' / f"{timestamped_id}.json"
+                #
+
+                raw_file_path = Path(self.config['workflow_output_directory']) / self.config[
+                    'workflow_unique_name'] / 'input' / 'raw' / f"{timestamped_id}.json"
+                json_file_path = Path(self.config['workflow_output_directory']) / self.config[
+                    'workflow_unique_name'] / 'input' / 'processed' / f"{timestamped_id}.json"
 
                 materials.append({
                     "name": timestamped_id,
@@ -274,10 +283,11 @@ class InputProcessor:
                 
             except Exception as e:
                 self.logger.warning(f"Error processing row {row.id}: {str(e)}")
+                failed_input.append(row.id)
                 continue
         
         if not materials:
             raise ValueError("No valid materials found in ASE database")
         
-        return materials
+        return materials, failed_input
     
