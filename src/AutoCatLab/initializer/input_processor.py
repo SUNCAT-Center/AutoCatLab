@@ -169,8 +169,8 @@ class InputProcessor:
                     mp_structure = mpr.get_structure_by_material_id(mp_id)                        
                     timestamped_id = self._get_timestamped_name(mp_id)
                     
-                    raw_file_path = self.config['workflow_output_directory'] /  f"{timestamped_id}.cif"
-                    json_file_path = self.config['workflow_output_directory'] / f"{timestamped_id}.json"
+                    raw_file_path = Path(self.config['workflow_output_directory']) /  f"{timestamped_id}.cif"
+                    json_file_path = Path(self.config['workflow_output_directory']) / f"{timestamped_id}.json"
 
                     materials.append({
                         "name": timestamped_id,
