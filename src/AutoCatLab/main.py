@@ -66,7 +66,7 @@ def show_progress(config: str, calculation_type: str = None):
     """
     try:
         if calculation_type:
-            run_workflow(config, command_step='show-progress', args=[calculation_type])
+            run_workflow(config, command_step='show-progress', args={'calculation_type': calculation_type})
         else:
             run_workflow(config, command_step='show-progress')
     except Exception as e:
@@ -130,7 +130,7 @@ def run_executor(config_path: str, workflow_name: str, batch_id: str):
 
 
 
-def run_workflow(file_path: str = None, command_step: str = None, args: list[str] = None):
+def run_workflow(file_path: str = None, command_step: str = None, args: dict[str, str] = {}):
     """Run a workflow from a specified configuration file.
     
     Args:
