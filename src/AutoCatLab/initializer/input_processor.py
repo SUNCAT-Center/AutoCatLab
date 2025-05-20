@@ -259,11 +259,18 @@ class InputProcessor:
         # Get all structures from database
         materials = []
         failed_input = []
+        formulas = set()
         for row in db.select():
             try:
                 atoms = row.toatoms()
-                formula = atoms.get_chemical_formula()
-                material_id = f"{formula}"
+                unique_formula = atoms.get_chemical_formula()
+
+                if unique_formula in formulas:
+                    material_id = f"{unique_formula}_{row.id}"
+                else:
+                    material_id = unique_formula
+                    formulas.add(unique_formula)
+
                 timestamped_id = self._get_timestamped_name(material_id)
 
                 raw_file_path = Path(self.config['workflow_output_directory']) / self.config[
