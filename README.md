@@ -89,7 +89,7 @@ sqlite3 workflow.db ".schema calc_status"
 
 ```
 
-```
+```bash
 CREATE TABLE workflow_details (
 	calc_unique_name VARCHAR(255) NOT NULL, 
 	config_path VARCHAR(255) NOT NULL, 
@@ -99,7 +99,7 @@ CREATE TABLE workflow_details (
 	success BOOLEAN, 
 	error TEXT, 
 	PRIMARY KEY (calc_unique_name)
-);
+); 
 CREATE TABLE workflow_batch_details (
 	batch_id INTEGER NOT NULL, 
 	workflow_unique_name VARCHAR(36) NOT NULL, 
@@ -133,26 +133,130 @@ CREATE TABLE workflow_batch_executions (
 	FOREIGN KEY(workflow_unique_name) REFERENCES workflow_details (calc_unique_name), 
 	FOREIGN KEY(batch_id) REFERENCES workflow_batch_details (batch_id)
 );
-
 ```
 
 #### Example Queries:
 
 ```sql
--- Count completed DFT relax calculations
-sqlite3 calculation.db "SELECT COUNT(*) FROM calc_status WHERE calc_unique_name = 'your_calculation_unique_name' AND calc_type = 'DFT_RELAX_EXECUTION' AND start_time != end_time;"
+-- ===========================
+-- Workflow Overview Queries
+-- ===========================
 
--- Count completed DOS calculations
-sqlite3 calculation.db "SELECT COUNT(*) FROM calc_status WHERE calc_unique_name = 'your_calculation_unique_name' AND calc_type = 'DFT_DOS_EXECUTION' AND start_time != end_time;"
+-- List all workflows and their statuses
+SELECT calc_unique_name, status, start_time, end_time, success
+FROM workflow_details;
 
--- Count completed ICOHP calculations
-sqlite3 calculation.db "SELECT COUNT(*) FROM calc_status WHERE calc_unique_name = 'your_calculation_unique_name' AND calc_type = 'ICOHP_EXECUTION' AND start_time != end_time;"
+-- Find all failed workflows and their error messages
+SELECT calc_unique_name, error, end_time
+FROM workflow_details
+WHERE success = 0;
 
--- Find ICOHP calculations completed in less than 120 seconds
-sqlite3 calculation.db "SELECT MATERIAL, SCRIPT_NAME FROM calc_status WHERE CALC_UNIQUE_NAME = 'your_calculation_unique_name' AND CALC_TYPE = 'ICOHP_EXECUTION' AND START_TIME != END_TIME AND (strftime('%s', END_TIME) - strftime('%s', START_TIME)) < 120;"
+-- Get all batches under a specific workflow
+-- Replace 'YOUR_WORKFLOW_NAME' with your workflow unique name
+SELECT batch_id, calculation_type, status, start_time, end_time
+FROM workflow_batch_details
+WHERE workflow_unique_name = 'YOUR_WORKFLOW_NAME';
 
--- Check execution time for each ICOHP calculation
-sqlite3 calculation.db "SELECT (strftime('%s', END_TIME) - strftime('%s', START_TIME)) AS duration, MATERIAL, SCRIPT_NAME FROM calc_status WHERE CALC_UNIQUE_NAME = 'demo_1' AND CALC_TYPE = 'ICOHP_EXECUTION' AND START_TIME != END_TIME;"
+-- ===========================
+-- Batch Execution Queries
+-- ===========================
+
+-- List all executions in a given batch (example: batch_id = 1)
+SELECT material_name, calculation_name, status, success
+FROM workflow_batch_executions
+WHERE batch_id = 1;
+
+-- Count successful executions per batch
+SELECT batch_id,
+       COUNT(*) AS total_executions,
+       SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) AS successful_executions
+FROM workflow_batch_executions
+GROUP BY batch_id;
+
+-- Show all failed material-level executions
+SELECT material_name, error, batch_id
+FROM workflow_batch_executions
+WHERE success = 0;
+
+-- Get full hierarchy: workflow → batch → executions
+-- Replace 'YOUR_WORKFLOW_NAME' with your workflow unique name
+SELECT wd.calc_unique_name,
+       wb.batch_id,
+       we.execution_id,
+       we.material_name,
+       we.status
+FROM workflow_details wd
+JOIN workflow_batch_details wb ON wd.calc_unique_name = wb.workflow_unique_name
+JOIN workflow_batch_executions we ON wb.batch_id = we.batch_id
+WHERE wd.calc_unique_name = 'YOUR_WORKFLOW_NAME';
+
+-- Get most recent successful workflow
+SELECT calc_unique_name, end_time
+FROM workflow_details
+WHERE success = 1
+ORDER BY end_time DESC
+LIMIT 1;
+
+-- ===========================
+-- Calculation Counts
+-- ===========================
+
+-- Count completed BULK_DFT_RELAX calculations
+SELECT COUNT(*) AS completed_relax_count
+FROM workflow_batch_executions
+WHERE calculation_name = 'BULK_DFT_RELAX' AND status = 'completed' AND success = 1;
+
+-- Count completed BULK_DFT_DOS calculations
+SELECT COUNT(*) AS completed_dos_count
+FROM workflow_batch_executions
+WHERE calculation_name = 'BULK_DFT_DOS' AND status = 'completed' AND success = 1;
+
+-- Count completed BULK_ICOHP calculations
+SELECT COUNT(*) AS completed_icohp_count
+FROM workflow_batch_executions
+WHERE calculation_name = 'BULK_ICOHP' AND status = 'completed' AND success = 1;
+
+-- ===========================
+-- Performance and Timing Queries
+-- ===========================
+
+-- Find BULK_ICOHP calculations completed in less than 5 minutes (300 seconds)
+SELECT material_name, batch_id, start_time, end_time,
+       (strftime('%s', end_time) - strftime('%s', start_time)) AS duration_seconds
+FROM workflow_batch_executions
+WHERE calculation_name = 'BULK_ICOHP'
+  AND status = 'completed'
+  AND success = 1
+  AND duration_seconds < 300;
+
+-- Check execution time for each BULK_DFT_RELAX calculation
+SELECT material_name, batch_id, start_time, end_time,
+       (strftime('%s', end_time) - strftime('%s', start_time)) AS execution_time_seconds
+FROM workflow_batch_executions
+WHERE calculation_name = 'BULK_DFT_RELAX'
+  AND status = 'completed'
+  AND success = 1
+ORDER BY execution_time_seconds ASC;
+
+-- Check execution time for each BULK_DFT_DOS calculation
+SELECT material_name, batch_id, start_time, end_time,
+       (strftime('%s', end_time) - strftime('%s', start_time)) AS execution_time_seconds
+FROM workflow_batch_executions
+WHERE calculation_name = 'BULK_DFT_DOS'
+  AND status = 'completed'
+  AND success = 1
+ORDER BY execution_time_seconds ASC;
+
+-- Check execution time for each BULK_ICOHP calculation
+SELECT material_name, batch_id, start_time, end_time,
+       (strftime('%s', end_time) - strftime('%s', start_time)) AS execution_time_seconds
+FROM workflow_batch_executions
+WHERE calculation_name = 'BULK_ICOHP'
+  AND status = 'completed'
+  AND success = 1
+ORDER BY execution_time_seconds ASC;
+
+
 ```
 
 ## 📚 Key Features
@@ -215,7 +319,8 @@ You can specify input materials in three different ways:
    ```json
    {
      "input": {
-       "type": "mp_custom_query",
+       "type": "ase_db",
+       "value": "/path/to/materials/directory/ase.db",
        "mp_api_key": "your_materials_project_api_key"
      }
    }
@@ -225,66 +330,145 @@ You can specify input materials in three different ways:
 
 ```json
 {
-  "calc_unique_name": "my_calculation", 
-   "calc_type": ["DFT_SUBMISSION","ICOHP_SUBMISSION"],
-  "calc_steps": {
-    "DFT_SUBMISSION": ["DFT_RELAX_EXECUTION", "DFT_DOS_EXECUTION"],
-    "ICOHP_SUBMISSION": ["ICOHP_EXECUTION"]
+  "workflow_unique_name": "testing_ase_db_v3",
+  "workflow_input": {
+    "type": "ase_db",
+    "value": "/pscratch/sd/r/ruchika/autocatlab_v3_testing/collect_M2O5.db",
+    "mp_api_key": "jXiKAGxuhEvtvGir6oFT4T3a5EuNS6Uz"
   },
-  "workflow_output": "/pscratch/sd/r/ruchika/calc_2025/calc/Kirsten_binary_W_calculation/output/",
-  "input": {
-    "type": "location",
-    "value": "/pscratch/sd/r/ruchika/calc_2025/calc/Kirsten_binary_W_calculation/input/",
-    "mp_api_key": "your mp api key"
-  },
-  "submission_detail": {
+  "workflow_output_directory": "/pscratch/sd/r/ruchika/autocatlab_v3_testing/output_asedb_v3/",
+  "batch_size": 5,
+  "workflow_steps": {
     "dft": {
-      "batch" : 1,
-      "gpu_queue": "debug",
-      "time": "00:30:00",
-      "node": 1,
-      "gpu": 4
+      "calculations": [
+        "BULK_DFT_RELAX",
+        "BULK_DFT_DOS"
+      ],
+      "submission_detail": {
+        "gpu_queue": "debug",
+        "time": "00:30:00",
+        "node": 1,
+        "gpu": 4,
+        "nTask": 4,
+        "cpusPertask": 32
+      },
+      "scheduler": {
+        "type": "slurm",
+        "prepend_commands": [
+          "#SBATCH -A m2997_g",
+          "export OMP_NUM_THREADS=1",
+          "export OMP_PLACES=threads",
+          "export OMP_PROC_BIND=spread",
+          "module load vasp/6.4.3-gpu",
+          "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54",
+          "export DB_OUTPUT_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
+        ]
+      }
     },
     "icohp": {
-      "batch" : 1,
-      "cpu_queue": "debug",
-      "cpu_time": "00:30:00",
-      "cpu_node": 1
+      "calculations": [
+        "BULK_ICOHP"
+      ],
+      "submission_detail": {
+        "cpu_queue": "debug",
+        "cpu_time": "00:15:00",
+        "cpu_node": 1
+      },
+      "scheduler": {
+        "type": "slurm",
+        "prepend_commands": [
+          "#SBATCH -A m2997",
+          "export OMP_NUM_THREADS=128",
+          "export OMP_PLACES=threads",
+          "export OMP_PROC_BIND=spread",
+          "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
+        ]
+      }
     }
   },
-  "calculation_parameters": {
-    "relax": {
+  "workflow_step_parameters": {
+    "BULK_DFT_RELAX": {
       "istart": 0,
-      "setups": "recommended",
-      "encut": 520,
+      "setups": {
+        "base": "recommended",
+        "W": "_sv"
+      },
+      "encut": 600,
       "xc": "PBE",
       "gga": "PE",
+      "npar": 1,
       "gamma": true,
       "ismear": 0,
-      "inimix": 0.25,
-      "amix": 0.2,
-      "bmix": 0.001,
-      "amix_mag": 0.8,
-      "bmix_mag": 0.001,
-      "nelm": 100,
+      "inimix": 0,
+      "amix": 0.1,
+      "bmix": 0.00001,
+      "amix_mag": 0.1,
+      "bmix_mag": 0.00001,
+      "nelm": 250,
       "sigma": 0.05,
-      "algo": "Normal",
+      "algo": "normal",
       "ibrion": 2,
+      "isif": 3,
       "ediffg": -0.02,
-      "ediff": 1e-5,
-      "prec": "Accurate",
+      "ediff": 0.00000001,
+      "prec": "Normal",
       "nsw": 200,
       "lvtot": false,
       "ispin": 2,
       "ldau": true,
       "ldautype": 2,
       "laechg": true,
-      "lreal": "Auto",
+      "lreal": false,
       "lasph": true,
-      "ldauprint": 1,
-      "lmaxmix": 4,
+      "ldauprint": 2,
+      "lmaxmix": 6,
       "lorbit": 11,
-      "nedos": 2000
+      "kpar": 4
+    },
+    "BULK_DFT_DOS": {
+      "istart": 0,
+      "setups": {
+        "base": "recommended",
+        "W": "_sv"
+      },
+      "encut": 600,
+      "xc": "PBE",
+      "gga": "PE",
+      "gamma": true,
+      "ismear": 0,
+      "inimix": 0,
+      "amix": 0.1,
+      "bmix": 0.00001,
+      "amix_mag": 0.1,
+      "bmix_mag": 0.00001,
+      "nelm": 250,
+      "sigma": 0.05,
+      "algo": "normal",
+      "ibrion": 2,
+      "isif": 3,
+      "ediffg": -0.02,
+      "ediff": 0.00000001,
+      "prec": "Normal",
+      "nsw": 200,
+      "lvtot": false,
+      "ispin": 2,
+      "ldau": true,
+      "ldautype": 2,
+      "laechg": true,
+      "lreal": false,
+      "lasph": true,
+      "ldauprint": 2,
+      "lmaxmix": 6,
+      "lorbit": 11,
+      "kpar": 4,
+      "npar": 1
+    },
+    "BULK_ICOHP": {
+      "basisSet": "pbeVaspFit2015",
+      "COHPStartEnergy": "-100",
+      "COHPEndEnergy": "100",
+      "DensityOfEnergy": ".TRUE.",
+      "max_radii": "2.3"
     }
   }
 }
@@ -294,14 +478,14 @@ You can specify input materials in three different ways:
 
 ```bibtex
 @article{mahajan2024predicting,
-  title = {Predicting the stability and catalytic activities of mixed transition metal oxides},
+  title = {AutoCatlab: Automated DFT+ICOHP calculations for both BULK and SURFACES},
   author = {Ruchika Mahajan and Kirsten Winther},
   journal = {x.x.x},
   volume = {x.x},
   issue = {x},
   pages = {12345},
   numpages = {6},
-  year = {2024},
+  year = {2025},
   month = {July},
   publisher = {American Physical Society},
   doi = {10.x.x.x},
