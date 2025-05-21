@@ -38,6 +38,7 @@ def create_container(config_path: str = None) -> Container:
     input_ase_db_connector = ASEDBConnector(config['workflow_input']['value'])
     container.set('input_ase_db_connector', input_ase_db_connector)
 
+
     result_ase_db_connector = ASEDBConnector(str(Path(config['workflow_output_directory']) / 'db/results.db'))
     container.set('result_ase_db_connector', result_ase_db_connector)
 
