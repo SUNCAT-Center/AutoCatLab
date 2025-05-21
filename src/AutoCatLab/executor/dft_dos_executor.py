@@ -16,6 +16,10 @@ from AutoCatLab.util.util import get_bool_env
 class DFTDOSExecutor(CalculationExecutor):
     """Executor for DFT DOS calculations."""
 
+    def save_result(self, config: Dict[str, Any], workflow_detail: WorkflowDetail, batch_detail: WorkflowBatchDetail,
+                    execution: WorkflowBatchExecution) -> bool:
+        pass
+
     def execute_calculation(
             self,
             config: Dict[str, Any],

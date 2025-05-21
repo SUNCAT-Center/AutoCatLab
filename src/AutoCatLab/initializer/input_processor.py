@@ -254,43 +254,43 @@ class InputProcessor:
         # if not self.directory_manager:
         #     raise ValueError("Directory manager is required for processing ASE DB input")
 
-        db = ase.db.connect(self.config['workflow_input']['value'])
+        with self.container.get("input_ase_db_connector") as connector:
+            db = connector.db
+            # Get all structures from database
+            materials = []
+            failed_input = []
+            formulas = set()
+            for row in db.select():
+                try:
+                    atoms = row.toatoms()
+                    unique_formula = atoms.get_chemical_formula()
 
-        # Get all structures from database
-        materials = []
-        failed_input = []
-        formulas = set()
-        for row in db.select():
-            try:
-                atoms = row.toatoms()
-                unique_formula = atoms.get_chemical_formula()
+                    if unique_formula in formulas:
+                        material_id = f"{unique_formula}_{row.id}"
+                    else:
+                        material_id = unique_formula
+                        formulas.add(unique_formula)
 
-                if unique_formula in formulas:
-                    material_id = f"{unique_formula}_{row.id}"
-                else:
-                    material_id = unique_formula
-                    formulas.add(unique_formula)
+                    timestamped_id = self._get_timestamped_name(material_id)
 
-                timestamped_id = self._get_timestamped_name(material_id)
+                    raw_file_path = Path(self.config['workflow_output_directory']) / self.config[
+                        'workflow_unique_name'] / 'input' / 'raw' / f"{timestamped_id}.json"
+                    json_file_path = Path(self.config['workflow_output_directory']) / self.config[
+                        'workflow_unique_name'] / 'input' / 'processed' / f"{timestamped_id}.json"
 
-                raw_file_path = Path(self.config['workflow_output_directory']) / self.config[
-                    'workflow_unique_name'] / 'input' / 'raw' / f"{timestamped_id}.json"
-                json_file_path = Path(self.config['workflow_output_directory']) / self.config[
-                    'workflow_unique_name'] / 'input' / 'processed' / f"{timestamped_id}.json"
+                    materials.append({
+                        "name": timestamped_id,
+                        "structure": atoms,
+                        "raw_file_path": raw_file_path,
+                        "json_file_path": json_file_path,
+                    })
 
-                materials.append({
-                    "name": timestamped_id,
-                    "structure": atoms,
-                    "raw_file_path": raw_file_path,
-                    "json_file_path": json_file_path,
-                })
+                except Exception as e:
+                    self.logger.warning(f"Error processing row {row.id}: {str(e)}")
+                    failed_input.append(row.id)
+                    continue
 
-            except Exception as e:
-                self.logger.warning(f"Error processing row {row.id}: {str(e)}")
-                failed_input.append(row.id)
-                continue
+            if not materials:
+                raise ValueError("No valid materials found in ASE database")
 
-        if not materials:
-            raise ValueError("No valid materials found in ASE database")
-
-        return materials, failed_input
+            return materials, failed_input

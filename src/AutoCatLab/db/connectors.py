@@ -72,7 +72,7 @@ class ASEDBConnector:
     def disconnect(self) -> None:
         """Disconnect from ASE database."""
         if self.db:
-            self.db.close()
+            del self.db
             self.db = None
             
     def __enter__(self):

@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict
 from AutoCatLab.db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
 
+
 class CalculationExecutor(ABC):
     """Interface for calculation executors."""
-    
+
     def __init__(self, container: Any):
         """Initialize calculation executor.
         
@@ -35,4 +36,14 @@ class CalculationExecutor(ABC):
         Returns:
             bool: True if calculation executed successfully
         """
-        pass 
+        pass
+
+    @abstractmethod
+    def save_result(
+            self,
+            config: Dict[str, Any],
+            workflow_detail: WorkflowDetail,
+            batch_detail: WorkflowBatchDetail,
+            execution: WorkflowBatchExecution
+    ) -> bool:
+        pass

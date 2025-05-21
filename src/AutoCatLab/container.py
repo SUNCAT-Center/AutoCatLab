@@ -35,8 +35,11 @@ def create_container(config_path: str = None) -> Container:
     sqlite_connector = SQLiteConnector(Path(config['workflow_output_directory']) / 'db/workflow.db')
     container.set('sqlite_connector', sqlite_connector)
 
-    ase_db_connector = ASEDBConnector(Path(config['workflow_output_directory']) / config['workflow_input']['value'])
-    container.set('ase_db_connector', ase_db_connector)
+    input_ase_db_connector = ASEDBConnector(config['workflow_input']['value'])
+    container.set('input_ase_db_connector', input_ase_db_connector)
+
+    result_ase_db_connector = ASEDBConnector(str(Path(config['workflow_output_directory']) / 'db/results.db'))
+    container.set('result_ase_db_connector', result_ase_db_connector)
 
     workflow_crud = WorkflowCRUD()
     container.set('workflow_crud', workflow_crud)

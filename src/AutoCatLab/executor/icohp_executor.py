@@ -15,7 +15,11 @@ from AutoCatLab.util.util import get_bool_env
 
 class ICOHPExecutor(CalculationExecutor):
     """Executor for ICOHP calculations."""
-    
+
+    def save_result(self, config: Dict[str, Any], workflow_detail: WorkflowDetail, batch_detail: WorkflowBatchDetail,
+                    execution: WorkflowBatchExecution) -> bool:
+        pass
+
     def execute_calculation(
         self,
         config: Dict[str, Any],
