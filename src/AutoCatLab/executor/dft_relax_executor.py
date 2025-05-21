@@ -26,7 +26,7 @@ class DFTRelaxExecutor(CalculationExecutor):
 
         with open(os.path.join(execution.result_material_dir, 'restart.json'), 'r') as f:
             restart_data = json.load(f)
-        folder = execution.result_mater_dir
+        folder = execution.result_material_dir
         entry = restart_data["1"]
 
         cell = np.array(entry["cell"]["array"]["__ndarray__"][2]).reshape((3, 3))
