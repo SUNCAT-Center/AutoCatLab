@@ -7,7 +7,9 @@ from pathlib import Path
 from typing import Any, Dict
 
 import numpy as np
-from ase.io.vasp import read_vasp_xml
+from ase.calculators.singlepoint import SinglePointCalculator
+from ase.io.vasp import read_vasp_xml, read_vasp_out
+from pymatgen.io.vasp import Vasprun
 
 from AutoCatLab.executor.util.util import get_initial_magmoms, get_kpoints, get_nbands_cohp, get_LUJ_values, get_restart
 from AutoCatLab.db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
@@ -21,69 +23,165 @@ from ase import Atoms
 class DFTRelaxExecutor(CalculationExecutor):
     """Executor for DFT relaxation calculations."""
 
-    def save_result(self, config: Dict[str, Any], workflow_detail: WorkflowDetail, batch_detail: WorkflowBatchDetail,
-                    execution: WorkflowBatchExecution) -> bool:
+    # def save_result(self, config: Dict[str, Any], workflow_detail: WorkflowDetail, batch_detail: WorkflowBatchDetail,
+    #                 execution: WorkflowBatchExecution) -> bool:
+    #
+    #     with open(os.path.join(execution.result_material_dir, 'restart.json'), 'r') as f:
+    #         restart_data = json.load(f)
+    #     folder = execution.result_material_dir
+    #     entry = restart_data["1"]
+    #
+    #     cell = np.array(entry["cell"]["array"]["__ndarray__"][2]).reshape((3, 3))
+    #     positions = np.array(entry["positions"]["__ndarray__"][2]).reshape((-1, 3))
+    #     numbers = np.array(entry["numbers"]["__ndarray__"][2])
+    #     pbc = np.array(entry["pbc"]["__ndarray__"][2])
+    #     magmoms = np.array(entry["initial_magmoms"]["__ndarray__"][2])
+    #     charges = np.array(entry["initial_charges"]["__ndarray__"][2])
+    #
+    #     atoms = Atoms(numbers=numbers, positions=positions, cell=cell, pbc=pbc)
+    #
+    #     # 2. Read functional + forces, stress, energy from vasprun.xml
+    #     vasprun_path = os.path.join(execution.result_material_dir, "vasprun.xml")
+    #
+    #     atoms_list = list(read_vasp_xml(vasprun_path))
+    #     atoms_final = atoms_list[-1]
+    #
+    #     energy = atoms_final.get_potential_energy()
+    #     forces = atoms_final.get_forces()
+    #     stress = atoms_final.get_stress()
+    #
+    #     # 3. Read INCAR parameters
+    #     incar_path = os.path.join(execution.result_material_dir, "INCAR")
+    #     incar_params = {}
+    #     if os.path.exists(incar_path):
+    #         with open(incar_path, 'r') as f:
+    #             for line in f:
+    #                 if "=" in line:
+    #                     key, val = line.strip().split("=", 1)
+    #                     incar_params[key.strip().upper()] = val.strip()
+    #
+    #     # 4. Read POTCAR pseudopotentials used
+    #     potcar_path = os.path.join(execution.result_material_dir, "POTCAR")
+    #     pseudopotentials = []
+    #     if os.path.exists(potcar_path):
+    #         with open(potcar_path, 'r') as f:
+    #             lines = f.readlines()
+    #             pseudopotentials = [line.strip().split()[2]
+    #                                 for line in lines if line.startswith("TITEL")]  # Format: "TITEL  = PAW_PBE X"
+    #
+    #     # 5. Save to ase db
+    #     with self.container.get("result_ase_db_connector") as connector:
+    #         db = connector.db
+    #         db.write(atoms, folder=folder,
+    #                  data={
+    #                      "magmoms": magmoms.tolist(),
+    #                      "bader_charges": charges.tolist(),
+    #                      "energy": energy,
+    #                      "forces": forces.tolist(),
+    #                      "stress": stress.tolist(),
+    #                      "vasp_functional": incar_params.get("GGA", "PBE"),
+    #                      "incar": incar_params,
+    #                      "pseudopotentials": pseudopotentials,
+    #                      "workflow_name": workflow_detail.calc_unique_name,
+    #                      "batch_id": batch_detail.batch_id,
+    #                      "user": entry.get("user", None)
+    #                  })
+    #
+    #     return True
 
-        with open(os.path.join(execution.result_material_dir, 'restart.json'), 'r') as f:
-            restart_data = json.load(f)
+    from ase.calculators.singlepoint import SinglePointCalculator
+    from ase.io.vasp import read_vasp_out, read_vasp_xml
+    from ase import Atoms
+    import os
+    import numpy as np
+
+    def save_result(self, config, workflow_detail, batch_detail, execution) -> bool:
         folder = execution.result_material_dir
-        entry = restart_data["1"]
 
-        cell = np.array(entry["cell"]["array"]["__ndarray__"][2]).reshape((3, 3))
-        positions = np.array(entry["positions"]["__ndarray__"][2]).reshape((-1, 3))
-        numbers = np.array(entry["numbers"]["__ndarray__"][2])
-        pbc = np.array(entry["pbc"]["__ndarray__"][2])
-        magmoms = np.array(entry["initial_magmoms"]["__ndarray__"][2])
-        charges = np.array(entry["initial_charges"]["__ndarray__"][2])
+        # 1. Read Atoms from OUTCAR (initial+final data)
+        atoms = read_vasp_out(os.path.join(folder, 'OUTCAR'))  # contains initial_magmoms, charges, etc.
 
-        atoms = Atoms(numbers=numbers, positions=positions, cell=cell, pbc=pbc)
-
-        # 2. Read functional + forces, stress, energy from vasprun.xml
-        vasprun_path = os.path.join(execution.result_material_dir, "vasprun.xml")
-
-        atoms_list = list(read_vasp_xml(vasprun_path))
-        atoms_final = atoms_list[-1]
+        # 2. Read final calculated values from vasprun.xml
+        vasprun_path = os.path.join(folder, 'vasprun.xml')
+        vasprun = Vasprun(vasprun_path)
+        atoms_final = list(read_vasp_xml(vasprun_path))[-1]
 
         energy = atoms_final.get_potential_energy()
         forces = atoms_final.get_forces()
         stress = atoms_final.get_stress()
+        magmoms = atoms.get_magnetic_moments()
+        magmom = np.sum(magmoms)
+        volume = atoms_final.get_volume()
+        mass = atoms_final.get_masses().sum()
+        fmax = np.max(np.abs(forces))
+        smax = np.max(np.abs(stress))
 
-        # 3. Read INCAR parameters
-        incar_path = os.path.join(execution.result_material_dir, "INCAR")
-        incar_params = {}
-        if os.path.exists(incar_path):
-            with open(incar_path, 'r') as f:
-                for line in f:
-                    if "=" in line:
-                        key, val = line.strip().split("=", 1)
-                        incar_params[key.strip().upper()] = val.strip()
 
-        # 4. Read POTCAR pseudopotentials used
-        potcar_path = os.path.join(execution.result_material_dir, "POTCAR")
-        pseudopotentials = []
-        if os.path.exists(potcar_path):
-            with open(potcar_path, 'r') as f:
-                lines = f.readlines()
-                pseudopotentials = [line.strip().split()[2]
-                                    for line in lines if line.startswith("TITEL")]  # Format: "TITEL  = PAW_PBE X"
+        # 3. Attach properties to Atoms
+        atoms.set_initial_magnetic_moments(atoms.get_initial_magnetic_moments())
+        atoms.set_initial_charges(atoms.get_initial_charges())
 
-        # 5. Save to ase db
+        atoms.calc = SinglePointCalculator(
+            atoms_final,
+            energy=energy,
+            forces=forces,
+            stress=stress,
+            magmoms=magmoms
+        )
+
+        # incar_params = vasprun.incar.as_dict()
+        incar_params = json.dumps(vasprun.incar.as_dict())
+
+        pseudopotentials = [ps["titel"] for ps in vasprun.potcar_spec]
+        vasp_version = vasprun.vasp_version
+        kpoints = vasprun.kpoints.kpts
+        lda_u = vasprun.parameters.get("LDAUU", None)
+        lda_ul = vasprun.parameters.get("LDAUL", None)
+        lda_uj = vasprun.parameters.get("LDAUJ", None)
+
+        # 5. Optional extra values
+        user = os.environ.get("USER", "unknown")  # or pull from execution.metadata
+        charge = np.sum(atoms.get_initial_charges())
+        with open(os.path.join(execution.result_material_dir, 'restart.json'), 'r') as f:
+            restart_data = json.load(f)
+            entry = restart_data["1"]
+            charges = np.array(entry["initial_charges"]["__ndarray__"][2])
+
+        # 6. Save to ASE DB
         with self.container.get("result_ase_db_connector") as connector:
             db = connector.db
-            db.write(atoms, folder=folder,
-                     data={
-                         "magmoms": magmoms.tolist(),
-                         "bader_charges": charges.tolist(),
-                         "energy": energy,
-                         "forces": forces.tolist(),
-                         "stress": stress.tolist(),
-                         "vasp_functional": incar_params.get("GGA", "PBE"),
-                         "incar": incar_params,
-                         "pseudopotentials": pseudopotentials,
-                         "workflow_name": workflow_detail.calc_unique_name,
-                         "batch_id": batch_detail.batch_id,
-                         "user": entry.get("user", None)
-                     })
+            db.write(
+                atoms,
+                key_value_pairs={
+                    "calculator_parameters": incar_params,
+                    "vasp_functional": incar_params.get("GGA", "PBE"),
+                    "workflow_name": workflow_detail.calc_unique_name,
+                    "batch_id": batch_detail.batch_id,
+                    "vasp_version": vasp_version,
+                },
+                data={
+                    "calculator": "vasp",
+                    "incar": incar_params,
+                    "pseudopotentials": pseudopotentials,
+                    "user": user,
+                    "kpoints": kpoints,
+                    "ldauu": lda_u,
+                    "ldaul": lda_ul,
+                    "ldauj": lda_uj,
+                    "energy": energy,
+                    "forces": forces.tolist(),
+                    "stress": stress.tolist(),
+                    "magmoms": magmoms.tolist(),
+                    "magmom": magmom,
+                    "volume": volume,
+                    "mass": mass,
+                    "charge": charge,
+                    "fmax": fmax,
+                    "smax": smax,
+                    "charges":charges
+                },
+                folder=folder
+            )
 
         return True
 
