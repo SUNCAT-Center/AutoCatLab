@@ -23,77 +23,6 @@ from ase import Atoms
 class DFTRelaxExecutor(CalculationExecutor):
     """Executor for DFT relaxation calculations."""
 
-    # def save_result(self, config: Dict[str, Any], workflow_detail: WorkflowDetail, batch_detail: WorkflowBatchDetail,
-    #                 execution: WorkflowBatchExecution) -> bool:
-    #
-    #     with open(os.path.join(execution.result_material_dir, 'restart.json'), 'r') as f:
-    #         restart_data = json.load(f)
-    #     folder = execution.result_material_dir
-    #     entry = restart_data["1"]
-    #
-    #     cell = np.array(entry["cell"]["array"]["__ndarray__"][2]).reshape((3, 3))
-    #     positions = np.array(entry["positions"]["__ndarray__"][2]).reshape((-1, 3))
-    #     numbers = np.array(entry["numbers"]["__ndarray__"][2])
-    #     pbc = np.array(entry["pbc"]["__ndarray__"][2])
-    #     magmoms = np.array(entry["initial_magmoms"]["__ndarray__"][2])
-    #     charges = np.array(entry["initial_charges"]["__ndarray__"][2])
-    #
-    #     atoms = Atoms(numbers=numbers, positions=positions, cell=cell, pbc=pbc)
-    #
-    #     # 2. Read functional + forces, stress, energy from vasprun.xml
-    #     vasprun_path = os.path.join(execution.result_material_dir, "vasprun.xml")
-    #
-    #     atoms_list = list(read_vasp_xml(vasprun_path))
-    #     atoms_final = atoms_list[-1]
-    #
-    #     energy = atoms_final.get_potential_energy()
-    #     forces = atoms_final.get_forces()
-    #     stress = atoms_final.get_stress()
-    #
-    #     # 3. Read INCAR parameters
-    #     incar_path = os.path.join(execution.result_material_dir, "INCAR")
-    #     incar_params = {}
-    #     if os.path.exists(incar_path):
-    #         with open(incar_path, 'r') as f:
-    #             for line in f:
-    #                 if "=" in line:
-    #                     key, val = line.strip().split("=", 1)
-    #                     incar_params[key.strip().upper()] = val.strip()
-    #
-    #     # 4. Read POTCAR pseudopotentials used
-    #     potcar_path = os.path.join(execution.result_material_dir, "POTCAR")
-    #     pseudopotentials = []
-    #     if os.path.exists(potcar_path):
-    #         with open(potcar_path, 'r') as f:
-    #             lines = f.readlines()
-    #             pseudopotentials = [line.strip().split()[2]
-    #                                 for line in lines if line.startswith("TITEL")]  # Format: "TITEL  = PAW_PBE X"
-    #
-    #     # 5. Save to ase db
-    #     with self.container.get("result_ase_db_connector") as connector:
-    #         db = connector.db
-    #         db.write(atoms, folder=folder,
-    #                  data={
-    #                      "magmoms": magmoms.tolist(),
-    #                      "bader_charges": charges.tolist(),
-    #                      "energy": energy,
-    #                      "forces": forces.tolist(),
-    #                      "stress": stress.tolist(),
-    #                      "vasp_functional": incar_params.get("GGA", "PBE"),
-    #                      "incar": incar_params,
-    #                      "pseudopotentials": pseudopotentials,
-    #                      "workflow_name": workflow_detail.calc_unique_name,
-    #                      "batch_id": batch_detail.batch_id,
-    #                      "user": entry.get("user", None)
-    #                  })
-    #
-    #     return True
-
-    from ase.calculators.singlepoint import SinglePointCalculator
-    from ase.io.vasp import read_vasp_out, read_vasp_xml
-    from ase import Atoms
-    import os
-    import numpy as np
 
     def save_result(self, config, workflow_detail, batch_detail, execution) -> bool:
         folder = execution.result_material_dir
@@ -153,32 +82,32 @@ class DFTRelaxExecutor(CalculationExecutor):
             db.write(
                 atoms,
                 key_value_pairs={
-                    "calculator_parameters": incar_params,
-                    "vasp_functional": incar_params.get("GGA", "PBE"),
+                    "vasp_functional": json.loads(incar_params).get("GGA", "PBE"),
                     "workflow_name": workflow_detail.calc_unique_name,
                     "batch_id": batch_detail.batch_id,
                     "vasp_version": vasp_version,
+                    "incar": incar_params,
+                    "volume": volume,
+                    "mass": mass,
+
                 },
                 data={
                     "calculator": "vasp",
-                    "incar": incar_params,
                     "pseudopotentials": pseudopotentials,
                     "user": user,
                     "kpoints": kpoints,
                     "ldauu": lda_u,
                     "ldaul": lda_ul,
                     "ldauj": lda_uj,
-                    "energy": energy,
                     "forces": forces.tolist(),
                     "stress": stress.tolist(),
                     "magmoms": magmoms.tolist(),
                     "magmom": magmom,
-                    "volume": volume,
-                    "mass": mass,
+                    "energy": energy,
                     "charge": charge,
+                    "charges":charges,
                     "fmax": fmax,
-                    "smax": smax,
-                    "charges":charges
+                    "smax": smax
                 },
                 folder=folder
             )
@@ -260,7 +189,7 @@ class DFTRelaxExecutor(CalculationExecutor):
             # copy_file(Path(dir) / 'POSCAR', Path(dir) / f'../{dos_dir_name}/')
             # copy_file(Path(dir) / 'restart.json', Path(dir) / f'../{dos_dir_name}/restart.json')
 
-            # raise Exception("Test error DOS")
+            # raise Exception("Test error RELAX")
             self.save_result(config, workflow_detail, batch_detail, execution)
             execution.status = 'completed'
             execution.success = True
