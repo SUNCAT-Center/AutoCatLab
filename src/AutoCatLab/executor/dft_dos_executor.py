@@ -3,6 +3,8 @@ import json
 import traceback
 from datetime import datetime
 import os
+import numpy as np
+
 from pathlib import Path
 import subprocess
 from typing import Any, Dict
@@ -15,7 +17,7 @@ from pymatgen.io.vasp import Vasprun
 from AutoCatLab.executor.calculation_executor import CalculationExecutor
 from ase.io import read
 from ase.calculators.vasp import Vasp
-from AutoCatLab.executor.util.util import get_initial_magmoms, get_kpoints, get_nbands_cohp, get_LUJ_values, center_tm_d, center_ptm_p, center_o_2p, pdos_data
+from AutoCatLab.executor.util.util import get_pdos_data
 from AutoCatLab.db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
 from AutoCatLab.util.util import get_bool_env
 
@@ -74,6 +76,7 @@ class DFTDOSExecutor(CalculationExecutor):
             restart_data = json.load(f)
             entry = restart_data["1"]
             charges = np.array(entry["initial_charges"]["__ndarray__"][2])
+        pdos_data, center_tm_d, center_ptm_p, center_o_2p = get_pdos_data(execution)
 
         # 6. Save to ASE DB
         with self.container.get("result_ase_db_connector") as connector:

@@ -534,34 +534,33 @@ def copy_file(source_path: str, destination_path: str) -> None:
         print(f"Error copying file: {str(e)}")
 
 
-if __name__ == '__main__':
-    # get_bader_charges(dir='../AutoCatLab_output/relax/')
-    with open('../../AutoCatLab_output/dos_ternary/dos1/dos/POSCAR', 'r') as file:
+def get_pdos_data(execution):
+    dos_dir = execution.result_material_dir
+    poscar_path = os.path.join(dos_dir, 'POSCAR')
+    with open(poscar_path, 'r') as file:
         first_line = file.readline().strip()
     first_line_list = first_line.split()
-    print(first_line_list)
 
-    R = RapiDOS(file_dir="../../AutoCatLab_output/dos_ternary/dos1/dos/")
+    R = RapiDOS(file_dir=dos_dir)
     xlim = [-15, 15]
 
     PTM_oxides = ['Al', 'Si', 'As', 'Bi', 'Ga', 'Ge', 'In', 'Pb', 'Sn', 'Sb', 'Tl', 'Po', 'Te']
-    orbital = [[], [], []]
     elements_orbital = {}
 
-    for i in range(3):
+    for i in range(len(first_line_list)):
         if first_line_list[i] == 'O':
             elements_orbital[first_line_list[i]] = ['p']
         elif first_line_list[i] in PTM_oxides:
             elements_orbital[first_line_list[i]] = ['p']
-        elif first_line_list[i] not in PTM_oxides:
-            elements_orbital[first_line_list[i]] = ['d']
         else:
-            elements_orbital[first_line_list[i]] = ['p']
+            elements_orbital[first_line_list[i]] = ['d']
 
     pdos_data = R.pdos_data(elements=elements_orbital, xlim=xlim)
+
     center_tm_d = 0.0
     center_ptm_p = 0.0
     center_o_2p = 0.0
+
     for key, value in elements_orbital.items():
         if 'd' in value:
             center_tm_d = R.get_pdos_center(elements={key: value})
@@ -569,4 +568,11 @@ if __name__ == '__main__':
             center_ptm_p = R.get_pdos_center(elements={key: value})
         else:
             center_o_2p = R.get_pdos_center(elements={key: value})
-    print(center_tm_d, center_ptm_p, center_o_2p)
+
+    return pdos_data, center_tm_d, center_ptm_p, center_o_2p
+
+
+
+
+
+

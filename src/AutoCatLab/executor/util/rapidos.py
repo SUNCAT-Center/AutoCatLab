@@ -27,7 +27,7 @@ class RapiDOS(SplitDOS):
 
     """
 
-    def __init__(self, file_dir='./', structure_file='CONTCAR'):
+    def __init__(self, file_dir='./', structure_file='/CONTCAR'):
         """Get general information of the system"""
         self.file_dir = file_dir
         self.input = self.file_dir + structure_file
@@ -45,7 +45,7 @@ class RapiDOS(SplitDOS):
 
     def get_spin(self):
 
-        incar_file = open(self.file_dir + "OUTCAR", "r")
+        incar_file = open(self.file_dir + "/OUTCAR", "r")
         ispin = 1  # Non spin polarised calculations.
         for line in incar_file:
             if re.match("(.*)ISPIN(.*)2", line):
@@ -55,7 +55,7 @@ class RapiDOS(SplitDOS):
     def get_kblock(self):
         """Check scale"""
         # KBLOCK scales DOSCAR (See VASP Manual).
-        for line in open(self.file_dir+'OUTCAR'):
+        for line in open(self.file_dir+'/OUTCAR'):
             if line.find('KBLOCK') != -1:
                 ckblock = line.split()
                 index = [i + 2 for i,
@@ -67,7 +67,7 @@ class RapiDOS(SplitDOS):
         """ Get np array and columns for total DOS"""
 
         # Load file total DOS from DOS0.
-        total_dos = np.loadtxt(self.file_dir + 'DOS0', skiprows=0)
+        total_dos = np.loadtxt(self.file_dir + '/DOS0', skiprows=0)
         # Scale (See kblock VASP).
         total_dos[:, 1:] = total_dos[:, 1:] * self.kblock
         self.total_dos = total_dos
@@ -121,13 +121,13 @@ class RapiDOS(SplitDOS):
         # atomic_symbols = self.atoms.get_chemical_symbols()
         pdos_data = {}
         for i in range(len(self.atoms)):
-            pdos_data[i] = np.loadtxt(self.file_dir +'DOS' + str(i + 1), skiprows=0)
+            pdos_data[i] = np.loadtxt(self.file_dir +'/DOS' + str(i + 1), skiprows=0)
 
         return self.pdos_columns, pdos_data
 
     def get_bandgap(self):
         # Load file total DOS from DOS0.
-        total_dos = np.loadtxt(self.file_dir +'DOS0', skiprows=0)
+        total_dos = np.loadtxt(self.file_dir +'/DOS0', skiprows=0)
         arg_fermi = np.where(total_dos[:, 0] > 0)[0][0]
         arg_fermi_upper = arg_fermi
         arg_fermi_lower = arg_fermi
@@ -426,7 +426,7 @@ class RapiDOS(SplitDOS):
                     write_dos_data['{}_{}_{}'.format(e, orbital_plot, s_label)] = np.abs(
                         pdos_i).tolist()  # (np.abs(pdos_up) + np.abs(pdos_down)).tolist()
         # print(write_dos_data)
-        with open(self.file_dir+'dos_data_spin.json', 'w') as f:
+        with open(self.file_dir+'/dos_data_spin.json', 'w') as f:
             f.write(json.dumps(write_dos_data))
         plt.axvline(x=[0.0], color='k', linestyle='--', linewidth=1.2)
 
@@ -550,7 +550,7 @@ class RapiDOS(SplitDOS):
                     write_dos_data['{}_{}_{}'.format(e, orbital_plot, s_label)] = np.abs(
                         pdos_i).tolist()  # (np.abs(pdos_up) + np.abs(pdos_down)).tolist()
         # print(write_dos_data)
-        with open(self.file_dir+'dos_data_spin.json', 'w') as f:
+        with open(self.file_dir+'/dos_data_spin.json', 'w') as f:
             f.write(json.dumps(write_dos_data))
 
         return write_dos_data

@@ -14,7 +14,7 @@ class SplitDOS:
         self.structure_file = self.file_dir + structure_file
         self.atoms = self.read_posfile()
 
-        with open(self.file_dir + "DOSCAR", 'r') as f:
+        with open(self.file_dir + "/DOSCAR", 'r') as f:
             self.lines = f.readlines()
         self.natoms = int(self.lines[0].strip().split()[0])
         self.index = 5
@@ -31,8 +31,8 @@ class SplitDOS:
         return atoms
 
     def write_dos0(self):
-        print("location", self.file_dir+"DOS0")
-        with open(self.file_dir+"DOS0", 'w') as fdos:
+        print("location", self.file_dir+"/DOS0")
+        with open(self.file_dir+"/DOS0", 'w') as fdos:
             line = self.lines[self.index+1].strip().split()
             self.ncols = int(len(line))
             for n in range(self.nedos):
@@ -57,7 +57,7 @@ class SplitDOS:
         for i in range(1, self.natoms+1):
             si = str(i)
 
-            fdos = open(self.file_dir+"DOS"+si, 'w')
+            fdos = open(self.file_dir+"/DOS"+si, 'w')
             self.index += 1
             ia = i-1
             fdos.write('# %15.8f %15.8f %15.8f \n' %
@@ -87,7 +87,7 @@ class SplitDOS:
         for i in range(1, self.natoms+1):
             si = str(i)
             ## OPEN DOSi FOR WRITING ##
-            with open(self.file_dir+"DOS"+si, 'w') as fdos:
+            with open(self.file_dir+"/DOS"+si, 'w') as fdos:
                 self.index += 1
                 ia = i-1
                 fdos.write('# %d \n' % (self.ncols))
