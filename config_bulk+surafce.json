@@ -38,7 +38,8 @@
     },
     "icohp": {
       "calculations": [
-        "BULK_ICOHP"
+        "BULK_ICOHP",
+        "SURFACE_ICOHP"
       ],
       "submission_detail": {
         "cpu_queue": "debug",
