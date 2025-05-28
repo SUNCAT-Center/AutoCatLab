@@ -1,6 +1,6 @@
 # AutoCatLab
 
-AutoCatLab is a python library which seamlessly perform high-throughput calculations both for BULK and surfaces (e.g DFT and DFT+ICOHP ) along with all data analysis which is config Driven.
+AutoCatLab is a python library which seamlessly perform high-throughput calculations both for BULK and SURFACE (e.g DFT and DFT+ICOHP ) along with all data analysis which is config Driven.
 This repository contains various script files that are requires to perform VASP calculations ([VASP with ASE interface)](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#introduction)
 and [materials project](https://materialsproject.org/) related queries.
 
@@ -65,7 +65,7 @@ pip show CatKit
 
 ### Step 3: `Prepare` Configuration
 
-Create a `config.json` file following the structure outlined in the [Configuration Guide](#configuration-guide) section below.
+Create a `config.json` file, follow the structure outlined in the [Configuration Guide](#configuration-guide) section below.
 
 ### Step 4: Execute Workflow
 
@@ -90,7 +90,11 @@ autocatlab resume-icohp --config /path/to/your/config.json
 ### Step 5: Monitor Calculation Status
 
 A SQLite database (`workflow.db`) is automatically generated in your output directory (`workflow_output` in `config.json`) when you run DFT or ICOHP calculations. You can query it to check the status of your jobs.
-
+Also, one can see the calculation status on terminal with show-progress command line argument
+#### Step 5.1: Show progress of the calculations
+```bash
+autocatlab show-progress --config config_asedb.json
+```
 Access the database through the SQLite CLI:
 ```bash
 sqlite3 workflow.db
@@ -430,6 +434,62 @@ You can specify input materials in three different ways:
 }
 
 ```
+
+#### Want ot run surface calculations 
+Please make changes in the workflow_steps,  
+``` bash
+"workflow_steps": {
+    "dft": {
+      "calculations": [
+        "SURFACE_DFT_RELAX",
+        "SURFACE_DFT_DOS"
+      ],
+"icohp": {
+      "calculations": [
+        "SURFACE_ICOHP"
+      ],
+```
+Also, make changes in the workflow_step_parameters. 
+``` bash
+"workflow_step_parameters": {
+    "SURFACE_DFT_RELAX": {
+    "SURFACE_DFT_DOS": {
+    "SURFACE_ICOHP": {
+```    
+### ✅ Note: SURFACE_DFT_RELAX: performs a surface relaxation using DFT and SURFACE_DFT_DOS: calculates the Density of States after relaxation.
+
+#### Run BULK + ICOHP calculations. e.g. you want to compute surafce energies of given bulk material inputs.
+To achieve that, AutoCatLab is integrated with CatKit for surface generator for different miller index. 
+Here is how you can do it.  
+
+``` bash
+"workflow_steps": {
+    "dft": {
+      "calculations": [
+        "BULK_DFT_RELAX",
+        "BULK_DFT_DOS",
+        "SURFACE_DFT_RELAX",
+        "SURFACE_DFT_DOS"
+      ],
+    "icohp": {
+      "calculations": [
+        "BULK_ICOHP", 
+        "SURFACE_ICOHP",
+      ],
+``` 
+Also, provide workflow_step_parameters for both  BULK and SURFACE.
+``` bash
+"workflow_step_parameters": {
+    "BULK_DFT_RELAX",
+    "BULK_DFT_DOS",
+    "BULK_ICOHP",
+    "SURFACE_DFT_RELAX": {
+    "SURFACE_DFT_DOS": {
+    "SURFACE_ICOHP": {
+``` 
+
+
+
 
 ## 📝 How to Cite
 
