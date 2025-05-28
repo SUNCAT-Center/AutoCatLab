@@ -69,35 +69,42 @@ class ICOHPExecutor(CalculationExecutor):
         # 6. Save to ASE DB
         with self.container.get("result_ase_db_connector") as connector:
             db = connector.db
-            db.write(atoms,
-                data={
-                    'icohp_matrix': I_matrix,
-                    'icohp_sum': I_sum,
-                    'icohp_matrix_s_d': I_matrix_s_d,
-                    'icohp_sum_s_d': I_sum_s_d,
-                    'icohp_sum_s_d_o_2s_2p': I_sum_s_d_o_2s_2p,
-                    'icohp_sum_d_o2p': I_sum_d_o2p,
-                    'distances': distances,
-                    'icohps': icohps,
-                    'pairs': pairs,
-                    'doe_energy': doe[:, 0],
-                    'doe_up': doe[:, 1],
-                    'doe_down': doe[:, 2],
-                    'idoe_up': doe[:, 3],
-                    'idoe_down': doe[:, 4],
-                    'eband': float(eband),
-                    'madelung_energies': madelung_energies,
-                },
-                folder=folder
-            )
+            rows = list(db.select(key=str(Path(folder).parent)))
+            if rows:
+                db.update(
+                    rows[0].id,
+                    atoms,
+                    key=str(Path(folder).parent),
+                    data={
+                        execution.calculation_name: {
+                            'icohp_matrix': I_matrix,
+                            'icohp_sum': I_sum,
+                            'icohp_matrix_s_d': I_matrix_s_d,
+                            'icohp_sum_s_d': I_sum_s_d,
+                            'icohp_sum_s_d_o_2s_2p': I_sum_s_d_o_2s_2p,
+                            'icohp_sum_d_o2p': I_sum_d_o2p,
+                            'distances': distances,
+                            'icohps': icohps,
+                            'pairs': pairs,
+                            'doe_energy': doe[:, 0],
+                            'doe_up': doe[:, 1],
+                            'doe_down': doe[:, 2],
+                            'idoe_up': doe[:, 3],
+                            'idoe_down': doe[:, 4],
+                            'eband': float(eband),
+                            'madelung_energies': madelung_energies,
+                        }
+                    },
+                    folder=str(Path(folder).parent)
+                )
         return True
 
     def execute_calculation(
-        self,
-        config: Dict[str, Any],
-        workflow_detail: WorkflowDetail,
-        batch_detail: WorkflowBatchDetail,
-        execution: WorkflowBatchExecution
+            self,
+            config: Dict[str, Any],
+            workflow_detail: WorkflowDetail,
+            batch_detail: WorkflowBatchDetail,
+            execution: WorkflowBatchExecution
     ) -> bool:
         """Execute ICOHP calculation.
         
@@ -160,7 +167,7 @@ class ICOHPExecutor(CalculationExecutor):
             execution.error = None
             execution.completed_at = datetime.now()
             return True
-            
+
         except Exception as e:
             self.logger.error(f"Error executing ICOHP: {str(e)}")
             self.logger.error("".join(traceback.format_exc()))
@@ -168,4 +175,4 @@ class ICOHPExecutor(CalculationExecutor):
             execution.success = False
             execution.error = str(e)
             execution.completed_at = datetime.now()
-            return False 
+            return False

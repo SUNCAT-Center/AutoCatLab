@@ -23,7 +23,6 @@ from ase import Atoms
 class DFTRelaxExecutor(CalculationExecutor):
     """Executor for DFT relaxation calculations."""
 
-
     def save_result(self, config, workflow_detail, batch_detail, execution) -> bool:
         folder = execution.result_material_dir
 
@@ -44,7 +43,6 @@ class DFTRelaxExecutor(CalculationExecutor):
         mass = atoms_final.get_masses().sum()
         fmax = np.max(np.abs(forces))
         smax = np.max(np.abs(stress))
-
 
         # 3. Attach properties to Atoms
         atoms.set_initial_magnetic_moments(atoms.get_initial_magnetic_moments())
@@ -81,35 +79,35 @@ class DFTRelaxExecutor(CalculationExecutor):
             db = connector.db
             db.write(
                 atoms,
-                key_value_pairs={
-                    "vasp_functional": json.loads(incar_params).get("GGA", "PBE"),
-                    "workflow_name": workflow_detail.calc_unique_name,
-                    "batch_id": batch_detail.batch_id,
-                    "vasp_version": vasp_version,
-                    "incar": incar_params,
-                    "volume": volume,
-                    "mass": mass,
-
-                },
+                key=str(Path(folder).parent),
                 data={
-                    "calculator": "vasp",
-                    "pseudopotentials": pseudopotentials,
-                    "user": user,
-                    "kpoints": kpoints,
-                    "ldauu": lda_u,
-                    "ldaul": lda_ul,
-                    "ldauj": lda_uj,
-                    "forces": forces.tolist(),
-                    "stress": stress.tolist(),
-                    "magmoms": magmoms.tolist(),
-                    "magmom": magmom,
-                    "energy": energy,
-                    "charge": charge,
-                    "charges":charges,
-                    "fmax": fmax,
-                    "smax": smax
+                    execution.calculation_name: {
+                        "vasp_functional": json.loads(incar_params).get("GGA", "PBE"),
+                        "workflow_name": workflow_detail.calc_unique_name,
+                        "batch_id": batch_detail.batch_id,
+                        "vasp_version": vasp_version,
+                        "incar": incar_params,
+                        "volume": volume,
+                        "mass": mass,
+                        "calculator": "vasp",
+                        "pseudopotentials": pseudopotentials,
+                        "user": user,
+                        "kpoints": kpoints,
+                        "ldauu": lda_u,
+                        "ldaul": lda_ul,
+                        "ldauj": lda_uj,
+                        "forces": forces.tolist(),
+                        "stress": stress.tolist(),
+                        "magmoms": magmoms.tolist(),
+                        "magmom": magmom,
+                        "energy": energy,
+                        "charge": charge,
+                        "charges": charges,
+                        "fmax": fmax,
+                        "smax": smax
+                    }
                 },
-                folder=folder
+                folder=str(Path(folder).parent)
             )
 
         return True

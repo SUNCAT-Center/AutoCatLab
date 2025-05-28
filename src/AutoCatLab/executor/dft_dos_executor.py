@@ -46,7 +46,6 @@ class DFTDOSExecutor(CalculationExecutor):
         fmax = np.max(np.abs(forces))
         smax = np.max(np.abs(stress))
 
-
         # 3. Attach properties to Atoms
         atoms.set_initial_magnetic_moments(atoms.get_initial_magnetic_moments())
         atoms.set_initial_charges(atoms.get_initial_charges())
@@ -81,42 +80,44 @@ class DFTDOSExecutor(CalculationExecutor):
         # 6. Save to ASE DB
         with self.container.get("result_ase_db_connector") as connector:
             db = connector.db
-            db.write(
-                atoms,
-                key_value_pairs={
-                    "vasp_functional": json.loads(incar_params).get("GGA", "PBE"),
-                    "workflow_name": workflow_detail.calc_unique_name,
-                    "batch_id": batch_detail.batch_id,
-                    "vasp_version": vasp_version,
-                    "incar": incar_params,
-                    "volume": volume,
-                    "mass": mass,
-
-                },
-                data={
-                    "calculator": "vasp",
-                    "pseudopotentials": pseudopotentials,
-                    "user": user,
-                    "kpoints": kpoints,
-                    "ldauu": lda_u,
-                    "ldaul": lda_ul,
-                    "ldauj": lda_uj,
-                    "forces": forces.tolist(),
-                    "stress": stress.tolist(),
-                    "magmoms": magmoms.tolist(),
-                    "magmom": magmom,
-                    "energy": energy,
-                    "charge": charge,
-                    "charges":charges,
-                    "fmax": fmax,
-                    "smax": smax,
-                    'd-band_center_tm': center_tm_d,
-                    'p-band_center_ptm': center_ptm_p,
-                    'p-center_o_2p': center_o_2p,
-                    'pdos_data': pdos_data
-                },
-                folder=folder
-            )
+            rows = list(db.select(key=str(Path(folder).parent)))
+            if rows:
+                db.update(rows[0].id,
+                    atoms,
+                    key=str(Path(folder).parent),
+                    data={
+                        execution.calculation_name: {
+                            "vasp_functional": json.loads(incar_params).get("GGA", "PBE"),
+                            "workflow_name": workflow_detail.calc_unique_name,
+                            "batch_id": batch_detail.batch_id,
+                            "vasp_version": vasp_version,
+                            "incar": incar_params,
+                            "volume": volume,
+                            "mass": mass,
+                            "calculator": "vasp",
+                            "pseudopotentials": pseudopotentials,
+                            "user": user,
+                            "kpoints": kpoints,
+                            "ldauu": lda_u,
+                            "ldaul": lda_ul,
+                            "ldauj": lda_uj,
+                            "forces": forces.tolist(),
+                            "stress": stress.tolist(),
+                            "magmoms": magmoms.tolist(),
+                            "magmom": magmom,
+                            "energy": energy,
+                            "charge": charge,
+                            "charges": charges,
+                            "fmax": fmax,
+                            "smax": smax,
+                            'd-band_center_tm': center_tm_d,
+                            'p-band_center_ptm': center_ptm_p,
+                            'p-center_o_2p': center_o_2p,
+                            'pdos_data': pdos_data
+                        }
+                    },
+                    folder=str(Path(folder).parent)
+                )
 
         return True
 
