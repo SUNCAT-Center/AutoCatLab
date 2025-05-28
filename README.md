@@ -1,6 +1,6 @@
 # AutoCatLab
 
-AutoCatLab is a python library which seamlessly perform high-throughput calculations (e.g DFT and DFT+ICOHP ) along with all data analysis which is config Driven.
+AutoCatLab is a python library which seamlessly perform high-throughput calculations both for BULK and surfaces (e.g DFT and DFT+ICOHP ) along with all data analysis which is config Driven.
 This repository contains various script files that are requires to perform VASP calculations ([VASP with ASE interface)](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#introduction)
 and [materials project](https://materialsproject.org/) related queries.
 
@@ -269,7 +269,8 @@ You can specify input materials in three different ways:
    }
    ```
 
-### Complete Configuration Example
+## ⚙️ Prepare config.json 
+#### Complete Configuration Example
 
 ```json
 {
