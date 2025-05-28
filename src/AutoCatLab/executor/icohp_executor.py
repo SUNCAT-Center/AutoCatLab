@@ -118,46 +118,45 @@ class ICOHPExecutor(CalculationExecutor):
             bool: True if calculation executed successfully
         """
         try:
-            # self.logger.info(f"Executing ICOHP for {execution.material_name}")
-            #
-            # source_dir = Path(execution.result_material_dir).parent / "BULK_DFT_DOS/"
-            # dest_dir = Path(execution.result_material_dir)
-            #
-            # lobster_params = config['workflow_step_parameters']['BULK_ICOHP']
-            #
-            # write_lobsterIn(str(source_dir) + '/', config_params=lobster_params)
-            #
-            # if not get_bool_env('local_dev'):
-            #     subprocess.call(f'cd {source_dir} && lobster-4.1.0', shell=True)
-            # else:
-            #     self.logger.info("Running in local development mode. Skipping ICOHP.")
-            #
-            # lobster_files = [
-            #     'bandOverlaps.lobster',
-            #     'CHARGE.lobster',
-            #     'COBICAR.lobster',
-            #     'COHPCAR.lobster',
-            #     'COOPCAR.lobster',
-            #     'DensityOfEnergy.lobster',
-            #     'DOSCAR.lobster',
-            #     'GROSSPOP.lobster',
-            #     'ICOBILIST.lobster',
-            #     'ICOHPLIST.lobster',
-            #     'ICOOPLIST.lobster',
-            #     'lobsterin',
-            #     'lobsterout',
-            #     'MadelungEnergies.lobster',
-            #     'SitePotentials.lobster']
-            #
-            #
-            # for file in lobster_files:
-            #     src_file = os.path.join(source_dir, file)
-            #     if os.path.exists(src_file):
-            #         subprocess.call(['mv', src_file, dest_dir])
-            #
-            # self.logger.info("Successfully moved LOBSTER output files to destination directory")
-            # self.logger.info(f"Successfully completed LOBSTER calculation for material {execution.material_name}")
-            # self.logger.info(f"LOBSTER output files generated in {source_dir}")
+            self.logger.info(f"Executing ICOHP for {execution.material_name}")
+
+            source_dir = Path(execution.result_material_dir).parent / "BULK_DFT_DOS/"
+            dest_dir = Path(execution.result_material_dir)
+
+            lobster_params = config['workflow_step_parameters']['BULK_ICOHP']
+
+            write_lobsterIn(str(source_dir) + '/', config_params=lobster_params)
+
+            if not get_bool_env('local_dev'):
+                subprocess.call(f'cd {source_dir} && lobster-4.1.0', shell=True)
+            else:
+                self.logger.info("Running in local development mode. Skipping ICOHP.")
+
+            lobster_files = [
+                'bandOverlaps.lobster',
+                'CHARGE.lobster',
+                'COBICAR.lobster',
+                'COHPCAR.lobster',
+                'COOPCAR.lobster',
+                'DensityOfEnergy.lobster',
+                'DOSCAR.lobster',
+                'GROSSPOP.lobster',
+                'ICOBILIST.lobster',
+                'ICOHPLIST.lobster',
+                'ICOOPLIST.lobster',
+                'lobsterin',
+                'lobsterout',
+                'MadelungEnergies.lobster',
+                'SitePotentials.lobster']
+
+            for file in lobster_files:
+                src_file = os.path.join(source_dir, file)
+                if os.path.exists(src_file):
+                    subprocess.call(['mv', src_file, dest_dir])
+
+            self.logger.info("Successfully moved LOBSTER output files to destination directory")
+            self.logger.info(f"Successfully completed LOBSTER calculation for material {execution.material_name}")
+            self.logger.info(f"LOBSTER output files generated in {source_dir}")
 
             # raise Exception("Test error ICOHP")
 

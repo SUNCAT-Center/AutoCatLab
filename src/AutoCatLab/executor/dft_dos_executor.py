@@ -17,7 +17,8 @@ from pymatgen.io.vasp import Vasprun
 from AutoCatLab.executor.calculation_executor import CalculationExecutor
 from ase.io import read
 from ase.calculators.vasp import Vasp
-from AutoCatLab.executor.util.util import get_pdos_data
+from AutoCatLab.executor.util.util import get_pdos_data, get_initial_magmoms, get_kpoints, get_LUJ_values, \
+    get_nbands_cohp
 from AutoCatLab.db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
 from AutoCatLab.util.util import get_bool_env
 
@@ -140,54 +141,54 @@ class DFTDOSExecutor(CalculationExecutor):
             bool: True if calculation executed successfully
         """
         try:
-            # self.logger.info(f"Executing DFT DOS for {execution.material_name}")
-            #
-            # dir = execution.result_material_dir
-            # restart_json = Path(dir) / "restart.json"
-            # calculation_name = execution.calculation_name
-            # submission_detail = config['workflow_steps'][batch_detail.calculation_type]['submission_detail']
-            # nTask = submission_detail['nTask']
-            # cpusPertask = submission_detail['cpusPertask']
-            # gpu = submission_detail['gpu']
-            # is_bulk = "BULK" in calculation_name
-            #
-            # command = 'srun -n ' + str(nTask) + ' -c ' + str(
-            #     cpusPertask) + ' --cpu-bind=cores --gpu-bind=none -G ' + str(gpu) + ' vasp_std'
-            #
-            # atoms = read(restart_json)
-            # initial_magmoms = get_initial_magmoms(atoms)
-            # atoms.set_initial_magnetic_moments(initial_magmoms)
-            # if not is_bulk:
-            #     atoms.pbc = [1, 1, 1]
-            #
-            # kpoints = get_kpoints(atoms, effective_length=60, bulk=is_bulk)
-            # user_luj = config['user_luj_values']
-            # LUJ_values = get_LUJ_values(atoms, user_luj)
-            #
-            # nbands_cohp = get_nbands_cohp(directory=dir + '/')
-            #
-            # vasp_params = config['workflow_step_parameters'][calculation_name]
-            #
-            # vasp_params.update({
-            #     'command': command,
-            #     'directory': dir,
-            #     'kpts': kpoints,
-            #     'ldau_luj': LUJ_values,
-            #     'nbands': nbands_cohp
-            # })
-            #
-            # calc = Vasp(**vasp_params)
-            #
-            # atoms.set_calculator(calc)
-            #
-            # if not get_bool_env('local_dev'):
-            #     atoms.get_potential_energy()
-            #     potcar_path = Path(dir) / 'POTCAR'
-            #     subprocess.run(['sed', '-i', '/SHA256/d; /COPYR/d', str(potcar_path)], check=True)
-            # else:
-            #     self.logger.info("Running in local development mode. Skipping DFT DOS.")
-            #
-            # self.logger.info("Successfully processed POTCAR file")
+            self.logger.info(f"Executing DFT DOS for {execution.material_name}")
+
+            dir = execution.result_material_dir
+            restart_json = Path(dir) / "restart.json"
+            calculation_name = execution.calculation_name
+            submission_detail = config['workflow_steps'][batch_detail.calculation_type]['submission_detail']
+            nTask = submission_detail['nTask']
+            cpusPertask = submission_detail['cpusPertask']
+            gpu = submission_detail['gpu']
+            is_bulk = "BULK" in calculation_name
+
+            command = 'srun -n ' + str(nTask) + ' -c ' + str(
+                cpusPertask) + ' --cpu-bind=cores --gpu-bind=none -G ' + str(gpu) + ' vasp_std'
+
+            atoms = read(restart_json)
+            initial_magmoms = get_initial_magmoms(atoms)
+            atoms.set_initial_magnetic_moments(initial_magmoms)
+            if not is_bulk:
+                atoms.pbc = [1, 1, 1]
+
+            kpoints = get_kpoints(atoms, effective_length=60, bulk=is_bulk)
+            user_luj = config['user_luj_values']
+            LUJ_values = get_LUJ_values(atoms, user_luj)
+
+            nbands_cohp = get_nbands_cohp(directory=dir + '/')
+
+            vasp_params = config['workflow_step_parameters'][calculation_name]
+
+            vasp_params.update({
+                'command': command,
+                'directory': dir,
+                'kpts': kpoints,
+                'ldau_luj': LUJ_values,
+                'nbands': nbands_cohp
+            })
+
+            calc = Vasp(**vasp_params)
+
+            atoms.set_calculator(calc)
+
+            if not get_bool_env('local_dev'):
+                atoms.get_potential_energy()
+                potcar_path = Path(dir) / 'POTCAR'
+                subprocess.run(['sed', '-i', '/SHA256/d; /COPYR/d', str(potcar_path)], check=True)
+            else:
+                self.logger.info("Running in local development mode. Skipping DFT DOS.")
+
+            self.logger.info("Successfully processed POTCAR file")
             # raise Exception("Test error")
             self.save_result(config, workflow_detail, batch_detail, execution)
             execution.status = 'completed'
