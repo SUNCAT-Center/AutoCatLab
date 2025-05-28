@@ -1,5 +1,5 @@
 {
-  "workflow_unique_name": "unique_name",
+  "workflow_unique_name": "bulk+surface_v3",
   "workflow_input": {
     "type": "location",
     "value": "/path/to/your/input/dir/",
@@ -11,13 +11,15 @@
     "dft": {
       "calculations": [
         "BULK_DFT_RELAX",
-        "BULK_DFT_DOS"
+        "BULK_DFT_DOS",
+        "SURFACE_DFT_RELAX",
+        "SURFACE_DFT_DOS"
       ],
       "submission_detail": {
-        "gpu_queue": "debug",
-        "time": "00:05:00",
-        "node": 1,
-        "gpu": 4,
+        "gpu_queue": "regular",
+        "time": "02:00:00",
+        "node": 4,
+        "gpu": 16,
         "nTask": 4,
         "cpusPertask": 32
       },
@@ -39,8 +41,8 @@
         "BULK_ICOHP"
       ],
       "submission_detail": {
-        "cpu_queue": "regular",
-        "cpu_time": "05:00:00",
+        "cpu_queue": "debug",
+        "cpu_time": "00:15:00",
         "cpu_node": 1
       },
       "scheduler": {
@@ -55,20 +57,8 @@
       }
     }
   },
-  "user_luj_values": {
-    "Sc": {
-      "L": 2,
-      "U": 1.00,
-      "J": 0.0
-    },
-    "Fe": {
-      "L": 2,
-      "U": 5.00,
-      "J": 0.1
-    }
-  },
   "workflow_step_parameters": {
-    "BULK_DFT_RELAX": {
+    "SURFACE_DFT_RELAX": {
       "istart": 0,
       "setups": {
         "base": "recommended",
@@ -89,7 +79,7 @@
       "sigma": 0.05,
       "algo": "normal",
       "ibrion": 2,
-      "isif": 3,
+      "isif": 2,
       "ediffg": -0.02,
       "ediff": 0.00000001,
       "prec": "Normal",
@@ -106,8 +96,8 @@
       "lorbit": 11,
       "kpar": 4
     },
-    "BULK_DFT_DOS": {
-      "istart": 0,
+    "SURFACE_DFT_DOS": {
+      "istart": 1,
       "setups": {
         "base": "recommended",
         "W": "_sv"
@@ -125,12 +115,12 @@
       "nelm": 250,
       "sigma": 0.05,
       "algo": "normal",
-      "ibrion": 2,
+      "ibrion": -1,
       "isif": 3,
       "ediffg": -0.02,
       "ediff": 0.00000001,
       "prec": "Normal",
-      "nsw": 200,
+      "nsw": 0,
       "lvtot": false,
       "ispin": 2,
       "ldau": true,
@@ -144,7 +134,7 @@
       "kpar": 4,
       "npar": 1
     },
-    "BULK_ICOHP": {
+    "SURFACE_ICOHP": {
       "basisSet": "pbeVaspFit2015",
       "COHPStartEnergy": "-100",
       "COHPEndEnergy": "100",

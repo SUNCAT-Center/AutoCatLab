@@ -418,9 +418,9 @@ Also, make changes in the workflow_step_parameters.
     "SURFACE_DFT_DOS": {
     "SURFACE_ICOHP": {
 ```    
-### ✅ Note: SURFACE_DFT_RELAX: performs a surface relaxation using DFT and SURFACE_DFT_DOS: calculates the Density of States after relaxation.
+#### ✅ Note: SURFACE_DFT_RELAX: performs a surface relaxation using DFT and SURFACE_DFT_DOS: calculates the Density of States after relaxation.
 
-#### Run BULK + ICOHP calculations. e.g. you want to compute surafce energies of given bulk material inputs.
+#### Run BULK + ICOHP calculations. e.g. you want to compute surafce energies of a given bulk material inputs.
 To achieve that, AutoCatLab is integrated with CatKit for surface generator for different miller index. 
 Here is how you can do it.  
 

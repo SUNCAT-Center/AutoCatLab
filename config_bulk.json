@@ -3,9 +3,9 @@
   "workflow_input": {
     "type": "location",
     "value": "/path/to/your/input/dir/",
-    "mp_api_key": "/your/mp/api/key"
+    "mp_api_key": "jXiKAGxuhEvtvGir6oFT4T3a5EuNS6Uz"
   },
-  "workflow_output_directory": "/path/to/your/output/dir/",
+  "workflow_output_directory": "/your/mp/api/key",
   "batch_size": 2,
   "workflow_steps": {
     "dft": {
