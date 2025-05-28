@@ -150,17 +150,6 @@ SELECT material_name, error, batch_id
 FROM workflow_batch_executions
 WHERE success = 0;
 
--- Get full hierarchy: workflow → batch → executions
--- Replace 'YOUR_WORKFLOW_NAME' with your workflow unique name
-SELECT wd.calc_unique_name,
-       wb.batch_id,
-       we.execution_id,
-       we.material_name,
-       we.status
-FROM workflow_details wd
-JOIN workflow_batch_details wb ON wd.calc_unique_name = wb.workflow_unique_name
-JOIN workflow_batch_executions we ON wb.batch_id = we.batch_id
-WHERE wd.calc_unique_name = 'YOUR_WORKFLOW_NAME';
 
 -- Get most recent successful workflow
 SELECT calc_unique_name, end_time
@@ -173,20 +162,12 @@ LIMIT 1;
 -- Calculation Counts
 -- ===========================
 
--- Count completed BULK_DFT_RELAX calculations
-SELECT COUNT(*) AS completed_relax_count
-FROM workflow_batch_executions
-WHERE calculation_name = 'BULK_DFT_RELAX' AND status = 'completed' AND success = 1;
 
 -- Count completed BULK_DFT_DOS calculations
 SELECT COUNT(*) AS completed_dos_count
 FROM workflow_batch_executions
 WHERE calculation_name = 'BULK_DFT_DOS' AND status = 'completed' AND success = 1;
 
--- Count completed BULK_ICOHP calculations
-SELECT COUNT(*) AS completed_icohp_count
-FROM workflow_batch_executions
-WHERE calculation_name = 'BULK_ICOHP' AND status = 'completed' AND success = 1;
 
 -- ===========================
 -- Performance and Timing Queries
@@ -209,25 +190,6 @@ WHERE calculation_name = 'BULK_DFT_RELAX'
   AND status = 'completed'
   AND success = 1
 ORDER BY execution_time_seconds ASC;
-
--- Check execution time for each BULK_DFT_DOS calculation
-SELECT material_name, batch_id, start_time, end_time,
-       (strftime('%s', end_time) - strftime('%s', start_time)) AS execution_time_seconds
-FROM workflow_batch_executions
-WHERE calculation_name = 'BULK_DFT_DOS'
-  AND status = 'completed'
-  AND success = 1
-ORDER BY execution_time_seconds ASC;
-
--- Check execution time for each BULK_ICOHP calculation
-SELECT material_name, batch_id, start_time, end_time,
-       (strftime('%s', end_time) - strftime('%s', start_time)) AS execution_time_seconds
-FROM workflow_batch_executions
-WHERE calculation_name = 'BULK_ICOHP'
-  AND status = 'completed'
-  AND success = 1
-ORDER BY execution_time_seconds ASC;
-
 
 ```
 
