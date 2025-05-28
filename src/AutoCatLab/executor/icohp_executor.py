@@ -26,12 +26,13 @@ class ICOHPExecutor(CalculationExecutor):
     def save_result(self, config: Dict[str, Any], workflow_detail: WorkflowDetail, batch_detail: WorkflowBatchDetail,
                     execution: WorkflowBatchExecution) -> bool:
         folder = execution.result_material_dir
-        orbital_map = yaml.load(open('constants/valence_orbital_mapping_new.yaml', 'r'), Loader)
-        orbital_map2 = yaml.load(open('constants/valence_orbital_mapping_new.yaml', 'r'), Loader)
-        orbital_map3 = yaml.load(open('constants/valence_orbital_mapping_new_metal_d_o2p.yaml', 'r'), Loader)
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'constant'))
+        orbital_map = yaml.load(open(os.path.join(base_path, 'valence_orbital_mapping_new.yaml')), Loader)
+        orbital_map2 = yaml.load(open(os.path.join(base_path, 'valence_orbital_mapping_new.yaml')), Loader)
+        orbital_map3 = yaml.load(open(os.path.join(base_path, 'valence_orbital_mapping_new_metal_d_o2p.yaml')), Loader)
         orbital_map2["O"] = "2s 2p"
 
-        atoms = read(os.path.join(folder, '/OUTCAR'))
+        atoms = read(os.path.join(folder, 'OUTCAR'))
         species = atoms.symbols.species()
         orbital = {}
         orbital2 = {}
@@ -68,7 +69,7 @@ class ICOHPExecutor(CalculationExecutor):
         # 6. Save to ASE DB
         with self.container.get("result_ase_db_connector") as connector:
             db = connector.db
-            db.write(
+            db.write(atoms,
                 data={
                     'icohp_matrix': I_matrix,
                     'icohp_sum': I_sum,
