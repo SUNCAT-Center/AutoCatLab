@@ -107,7 +107,8 @@ class BatchProcessor:
         created_batches = []
         for batch in batches:
             batch_script_dir_name = batch.result_batch_dir.split('/')[-1]
-            batch_script_path = batch.script_path.replace(batch.calculation_type, 'icohp')
+            script_name = batch.script_path.split('/')[-1].replace(batch.calculation_type, 'icohp')
+            batch_script_path = Path( batch.script_path).parent / script_name
             materials = json.loads(batch.materials)
             workflow_batch_data = {
                 'workflow_unique_name': workflow_detail.calc_unique_name,
