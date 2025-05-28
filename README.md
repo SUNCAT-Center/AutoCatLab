@@ -41,14 +41,26 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-### Step 2: Install AutoCatLab
+### Step 2: Install AutoCatLab 
 
 ```bash
-pip3 install git+https://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@github.com/ruchikamahajan66/autocatlab_v3.git```
+pip3 install git+https://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@github.com/ruchikamahajan66/autocatlab_v3.git 
+```
 
 Verify installation:
 ```bash
 autocatlab --help
+```
+### Step 2.1: Install CatKit
+
+```bash
+pip3 install git+https://github.com/ruchikamahajan66/CatKit.git@fix_requirements#egg=CatKit 
+```
+
+
+Verify installation:
+```bash
+pip show CatKit
 ```
 
 ### Step 3: `Prepare` Configuration
@@ -89,50 +101,6 @@ sqlite3 workflow.db ".schema calc_status"
 
 ```
 
-```bash
-CREATE TABLE workflow_details (
-	calc_unique_name VARCHAR(255) NOT NULL, 
-	config_path VARCHAR(255) NOT NULL, 
-	status VARCHAR(50), 
-	start_time DATETIME NOT NULL, 
-	end_time DATETIME, 
-	success BOOLEAN, 
-	error TEXT, 
-	PRIMARY KEY (calc_unique_name)
-); 
-CREATE TABLE workflow_batch_details (
-	batch_id INTEGER NOT NULL, 
-	workflow_unique_name VARCHAR(36) NOT NULL, 
-	materials TEXT NOT NULL, 
-	calculation_type TEXT NOT NULL, 
-	result_batch_dir VARCHAR(255) NOT NULL, 
-	script_path VARCHAR(255) NOT NULL, 
-	job_id VARCHAR(255), 
-	status VARCHAR(50), 
-	start_time DATETIME NOT NULL, 
-	end_time DATETIME, 
-	success BOOLEAN, 
-	error TEXT, 
-	PRIMARY KEY (batch_id), 
-	FOREIGN KEY(workflow_unique_name) REFERENCES workflow_details (calc_unique_name)
-);
-CREATE TABLE workflow_batch_executions (
-	execution_id INTEGER NOT NULL, 
-	workflow_unique_name VARCHAR(36) NOT NULL, 
-	batch_id INTEGER NOT NULL, 
-	material_name VARCHAR(255) NOT NULL, 
-	result_material_dir VARCHAR(255) NOT NULL, 
-	script_path VARCHAR(255) NOT NULL, 
-	calculation_name VARCHAR(255) NOT NULL, 
-	status VARCHAR(50), 
-	start_time DATETIME NOT NULL, 
-	end_time DATETIME, 
-	success BOOLEAN, 
-	error TEXT, 
-	PRIMARY KEY (execution_id), 
-	FOREIGN KEY(workflow_unique_name) REFERENCES workflow_details (calc_unique_name), 
-	FOREIGN KEY(batch_id) REFERENCES workflow_batch_details (batch_id)
-);
 ```
 
 #### Example Queries:
@@ -263,31 +231,6 @@ ORDER BY execution_time_seconds ASC;
 
 ### Materials Project Integration
 
-####  Download materials from [materials project](https://materialsproject.org/)
-As name suggests, this functionality downloads the materials and its related information based upon filtter parameters. 
-As an implementation, it uses ```.summary.search``` api of material library ```mp_api```.
-
-| SN |        file        |                         description |
-|----|:------------------:|------------------------------------:|
-| 1  | ```database.py ``` |         download the materials data |
-
-e.g. it calculates the mixed Iridium (Ir) oxides with other transition metals and exports its structure data (CIF format) in the directory called "cif_data". 
-
-
-##  ICOHP ( Integrated Crystal Orbital Hamilton Population ) calculations
-ICOHP calculation is done after the density of states (DOS) calculation. 
-This method helps to understand the bonding properties of a material.
-
-| SN |                        file/activity                        |                                                           description |
-|----|:-----------------------------------------------------------:|----------------------------------------------------------------------:|
-| 1  |                      ```submit.pbs ```                      |     job script for running ```vasp6``` on ```perlmutter GPU``` nodes. |
-| 2  |                    ```lobster-4.1.0 ```                     |                  run  ```lobster-4.1.0```  with ```lobsterin``` file. |
-| 3  |                   ```lobster_tools.py ```                   |  create lobster input and analyse the result of lobster calculations. |
-
-## <a name="configuration-guide"></a>Configuration Guide
-
-Your `config.json` file must include the following parameters:
-
 ### Materials Input Options
 
 
@@ -315,12 +258,12 @@ You can specify input materials in three different ways:
    }
    ```
 
-3. **Using Materials Project custom query** - Use the MP API for custom filtering:
+3. **Using ase db** -provide ase db location and code will generate the materials input based on ase atoms object:
    ```json
    {
      "input": {
        "type": "ase_db",
-       "value": "/path/to/materials/directory/ase.db",
+       "value": "/path/to/your/ase/db/ase.db",
        "mp_api_key": "your_materials_project_api_key"
      }
    }
@@ -330,14 +273,14 @@ You can specify input materials in three different ways:
 
 ```json
 {
-  "workflow_unique_name": "testing_ase_db_v3",
+  "workflow_unique_name": "testing_v3_2",
   "workflow_input": {
-    "type": "ase_db",
-    "value": "/pscratch/sd/r/ruchika/autocatlab_v3_testing/collect_M2O5.db",
-    "mp_api_key": "jXiKAGxuhEvtvGir6oFT4T3a5EuNS6Uz"
+    "type": "location",
+    "value": "/path/to/your/input/dir/",
+    "mp_api_key": "/your/mp/api/key"
   },
-  "workflow_output_directory": "/pscratch/sd/r/ruchika/autocatlab_v3_testing/output_asedb_v3/",
-  "batch_size": 5,
+  "workflow_output_directory": "/path/to/your/output/dir/",
+  "batch_size": 2,
   "workflow_steps": {
     "dft": {
       "calculations": [
@@ -384,6 +327,18 @@ You can specify input materials in three different ways:
           "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
         ]
       }
+    }
+  },
+  "user_luj_values": {
+    "Sc": {
+      "L": 2,
+      "U": 1.00,
+      "J": 0.0
+    },
+    "Fe": {
+      "L": 2,
+      "U": 5.00,
+      "J": 0.1
     }
   },
   "workflow_step_parameters": {
@@ -472,6 +427,7 @@ You can specify input materials in three different ways:
     }
   }
 }
+
 ```
 
 ## 📝 How to Cite
