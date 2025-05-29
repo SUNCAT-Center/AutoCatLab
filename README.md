@@ -1,253 +1,129 @@
 # AutoCatLab
 
-AutoCatLab is a python library which seamlessly perform high-throughput calculations both for BULK and SURFACE (e.g DFT and DFT+ICOHP ) along with all data analysis which is config Driven.
-This repository contains various script files that are requires to perform VASP calculations ([VASP with ASE interface)](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#introduction)
-and [materials project](https://materialsproject.org/) related queries.
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![ASE](https://img.shields.io/badge/ASE-compatible-green.svg)](https://wiki.fysik.dtu.dk/ase/)
 
-Atomistic simulation environment [(ASE)](https://wiki.fysik.dtu.dk/ase/) is an open source python library which help to setting up, manipulate, run, visualize and analyzing atomistic simulations.
-It's interface makes it possible to use VASP as a calculator in ASE, 
-and also to use ASE as a post-processing tool for an already performed VASP  calculations.
+**AutoCatLab** is a powerful Python library for seamless high-throughput computational chemistry calculations. It performs automated DFT (Density Functional Theory) and DFT+ICOHP (Integrated Crystal Orbital Hamilton Population) calculations for both **bulk materials** and **surfaces** with comprehensive data analysis through a configuration-driven approach.
 
-Following are some brief explanation for different functionalities and their related calculations. 
+## ✨ Key Features
 
-## 🚀 Quick Install
+- 🔬 **High-throughput DFT calculations** for bulk and surface systems
+- 📊 **Automated ICOHP analysis** for chemical bonding insights  
+- 🎯 **Config-driven workflows** - no complex scripting required
+- 🔗 **Materials Project integration** for easy material discovery
+- 📈 **Built-in progress tracking** with SQLite database
+- 🖥️ **HPC cluster support** with SLURM scheduler integration
+- 🔄 **Resume functionality** for interrupted calculations
+- 🧮 **Surface generation** via CatKit integration
+
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
-pip3 install git+https://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@github.com/ruchikamahajan66/autocatlab_v3.git 
+# Create and activate virtual environment (Python 3.10+ required)
+python -m venv autocatlab-env
+source autocatlab-env/bin/activate  # On Windows: autocatlab-env\Scripts\activate
+
+# Install AutoCatLab
+pip install git+https://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@github.com/ruchikamahajan66/autocatlab_v3.git
+
+# Install CatKit for surface generation
+pip install git+https://github.com/ruchikamahajan66/CatKit.git@fix_requirements#egg=CatKit
+
+# Verify installation
+autocatlab --help
+```
+
+### Basic Usage
+
+```bash
+# Start DFT calculations
+autocatlab start-dft --config config.json
+
+# Resume interrupted calculations  
+autocatlab resume-dft --config config.json
+
+# Run ICOHP analysis
+autocatlab start-icohp --config config.json
+
+# Monitor progress
+autocatlab show-progress --config config.json
 ```
 
 ## 📋 Prerequisites
 
-This package requires:
-* [PyTorch](https://pytorch.org/)
-* [scikit-learn](https://scikit-learn.org/stable/)
-* [pymatgen](https://pymatgen.org/)
-* [ASE](https://wiki.fysik.dtu.dk/ase/) and [ASE DB](https://wiki.fysik.dtu.dk/ase/ase/db/db.html)
-* [matplotlib](https://matplotlib.org/)
-* [mp-api](https://pypi.org/project/mp-api/)
-* numpy, pandas, spglib, scipy
+### Required Dependencies
+- **[PyTorch](https://pytorch.org/)** - Deep learning framework
+- **[scikit-learn](https://scikit-learn.org/)** - Machine learning library
+- **[pymatgen](https://pymatgen.org/)** - Materials analysis
+- **[ASE](https://wiki.fysik.dtu.dk/ase/)** & **[ASE DB](https://wiki.fysik.dtu.dk/ase/ase/db/db.html)** - Atomistic simulation environment
+- **[matplotlib](https://matplotlib.org/)** - Plotting library
+- **[mp-api](https://pypi.org/project/mp-api/)** - Materials Project API
+- **Standard scientific libraries**: numpy, pandas, spglib, scipy
 
-## 🛠️ Getting Started
+### External Software
+- **VASP** - Vienna Ab initio Simulation Package (license required)
+- **LOBSTER** - For ICOHP calculations
 
-### Step 1: Set Up Environment
+## ⚙️ Configuration
 
-Create and activate a virtual environment:
-```bash
-# Create virtual environment
-# Please make sure python version >= 3.10
-python -m venv venv
+AutoCatLab uses JSON configuration files to define workflows. Here's a comprehensive example:
 
-# Activate the environment
-source venv/bin/activate
+### Material Input Options
+
+Choose one of three input methods:
+
+#### 1. Local Directory
+```json
+{
+  "workflow_input": {
+    "type": "location",
+    "value": "/path/to/materials/directory",
+    "mp_api_key": "your_materials_project_api_key"
+  }
+}
 ```
 
-### Step 2: Install AutoCatLab 
-
-```bash
-pip3 install git+https://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@github.com/ruchikamahajan66/autocatlab_v3.git 
+#### 2. Materials Project IDs
+```json
+{
+  "workflow_input": {
+    "type": "mp_ids", 
+    "value": ["mp-14333", "mp-3748"],
+    "mp_api_key": "your_materials_project_api_key"
+  }
+}
 ```
 
-Verify installation:
-```bash
-autocatlab --help
-```
-### Step 2.1: Install CatKit
-
-```bash
-pip3 install git+https://github.com/ruchikamahajan66/CatKit.git@fix_requirements#egg=CatKit 
-```
-
-
-Verify installation:
-```bash
-pip show CatKit
+#### 3. ASE Database
+```json
+{
+  "workflow_input": {
+    "type": "ase_db",
+    "value": "/path/to/ase.db",
+    "mp_api_key": "your_materials_project_api_key"
+  }
+}
 ```
 
-### Step 3: `Prepare` Configuration
+### Complete Configuration Example
 
-Create a `config.json` file, follow the structure outlined in the [Configuration Guide](#configuration-guide) section below.
-
-### Step 4: Execute Workflow
-
-#### Run DFT calculations (relaxation + DOS):
-```bash
-autocatlab start-dft --config /path/to/your/config.json
-```
-#### Resume DFT calculations (relaxation + DOS):
-```bash
-autocatlab resume-dft --config  /path/to/your/config.json
-```
-
-#### Run ICOHP calculations:
-```bash
-autocatlab start-icohp --config /path/to/your/config.json
-```
-#### Resume ICOHP calculations:
-```bash
-autocatlab resume-icohp --config /path/to/your/config.json
-```
-
-### Step 5: Monitor Calculation Status
-
-A SQLite database (`workflow.db`) is automatically generated in your output directory (`workflow_output` in `config.json`) when you run DFT or ICOHP calculations. You can query it to check the status of your jobs.
-Also, one can see the calculation status on terminal with show-progress command line argument
-#### Step 5.1: Show progress of the calculations
-```bash
-autocatlab show-progress --config config_asedb.json
-```
-Access the database through the SQLite CLI:
-```bash
-sqlite3 workflow.db
-```
-View the schema of a table
-``` 
-sqlite3 workflow.db ".schema calc_status"
-
-```
-
-```
-
-#### Example Queries:
-
-```sql
--- ===========================
--- Workflow Overview Queries
--- ===========================
-
--- List all workflows and their statuses
-SELECT calc_unique_name, status, start_time, end_time, success
-FROM workflow_details;
-
--- Find all failed workflows and their error messages
-SELECT calc_unique_name, error, end_time
-FROM workflow_details
-WHERE success = 0;
-
--- Get all batches under a specific workflow
--- Replace 'YOUR_WORKFLOW_NAME' with your workflow unique name
-SELECT batch_id, calculation_type, status, start_time, end_time
-FROM workflow_batch_details
-WHERE workflow_unique_name = 'YOUR_WORKFLOW_NAME';
-
--- ===========================
--- Batch Execution Queries
--- ===========================
-
--- List all executions in a given batch (example: batch_id = 1)
-SELECT material_name, calculation_name, status, success
-FROM workflow_batch_executions
-WHERE batch_id = 1;
-
--- Count successful executions per batch
-SELECT batch_id,
-       COUNT(*) AS total_executions,
-       SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) AS successful_executions
-FROM workflow_batch_executions
-GROUP BY batch_id;
-
--- Show all failed material-level executions
-SELECT material_name, error, batch_id
-FROM workflow_batch_executions
-WHERE success = 0;
-
-
--- Get most recent successful workflow
-SELECT calc_unique_name, end_time
-FROM workflow_details
-WHERE success = 1
-ORDER BY end_time DESC
-LIMIT 1;
-
--- ===========================
--- Calculation Counts
--- ===========================
-
-
--- Count completed BULK_DFT_DOS calculations
-SELECT COUNT(*) AS completed_dos_count
-FROM workflow_batch_executions
-WHERE calculation_name = 'BULK_DFT_DOS' AND status = 'completed' AND success = 1;
-
-
--- ===========================
--- Performance and Timing Queries
--- ===========================
-
--- Find BULK_ICOHP calculations completed in less than 5 minutes (300 seconds)
-SELECT material_name, batch_id, start_time, end_time,
-       (strftime('%s', end_time) - strftime('%s', start_time)) AS duration_seconds
-FROM workflow_batch_executions
-WHERE calculation_name = 'BULK_ICOHP'
-  AND status = 'completed'
-  AND success = 1
-  AND duration_seconds < 300;
-
--- Check execution time for each BULK_DFT_RELAX calculation
-SELECT material_name, batch_id, start_time, end_time,
-       (strftime('%s', end_time) - strftime('%s', start_time)) AS execution_time_seconds
-FROM workflow_batch_executions
-WHERE calculation_name = 'BULK_DFT_RELAX'
-  AND status = 'completed'
-  AND success = 1
-ORDER BY execution_time_seconds ASC;
-
-```
-
-## 📚 Key Features
-
-### Materials Project Integration
-
-### Materials Input Options
-
-
-You can specify input materials in three different ways:
-
-1. **From a local directory** - Provide the path to a directory containing material files:
-   ```json
-   {
-     "input": {
-       "type": "location",
-       "value": "/path/to/materials/directory",
-       "mp_api_key": "your_materials_project_api_key"
-     }
-   }
-   ```
-
-2. **Using Materials Project IDs** - Provide a list of MP material IDs:
-   ```json
-   {
-     "input": {
-       "type": "mp_ids",
-       "value": ["mp-14333", "mp-3748"],
-       "mp_api_key": "your_materials_project_api_key"
-     }
-   }
-   ```
-
-3. **Using ase db** -provide ase db location and code will generate the materials input based on ase atoms object:
-   ```json
-   {
-     "input": {
-       "type": "ase_db",
-       "value": "/path/to/your/ase/db/ase.db",
-       "mp_api_key": "your_materials_project_api_key"
-     }
-   }
-   ```
-
-## ⚙️ Prepare config.json 
-#### Complete Configuration Example
+<details>
+<summary>Click to expand full config.json example</summary>
 
 ```json
 {
-  "workflow_unique_name": "testing_v3_2",
+  "workflow_unique_name": "my_dft_workflow",
   "workflow_input": {
     "type": "location",
-    "value": "/path/to/your/input/dir/",
-    "mp_api_key": "/your/mp/api/key"
+    "value": "/path/to/input/materials/",
+    "mp_api_key": "your_mp_api_key_here"
   },
-  "workflow_output_directory": "/path/to/your/output/dir/",
-  "batch_size": 2,
+  "workflow_output_directory": "/path/to/output/",
+  "batch_size": 4,
+  
   "workflow_steps": {
     "dft": {
       "calculations": [
@@ -255,8 +131,8 @@ You can specify input materials in three different ways:
         "BULK_DFT_DOS"
       ],
       "submission_detail": {
-        "gpu_queue": "debug",
-        "time": "00:30:00",
+        "gpu_queue": "gpu",
+        "time": "02:00:00", 
         "node": 1,
         "gpu": 4,
         "nTask": 4,
@@ -265,13 +141,10 @@ You can specify input materials in three different ways:
       "scheduler": {
         "type": "slurm",
         "prepend_commands": [
-          "#SBATCH -A m2997_g",
+          "#SBATCH -A your_account",
           "export OMP_NUM_THREADS=1",
-          "export OMP_PLACES=threads",
-          "export OMP_PROC_BIND=spread",
           "module load vasp/6.4.3-gpu",
-          "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54",
-          "export DB_OUTPUT_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
+          "export VASP_PP_PATH=/path/to/pseudopotentials"
         ]
       }
     },
@@ -280,201 +153,256 @@ You can specify input materials in three different ways:
         "BULK_ICOHP"
       ],
       "submission_detail": {
-        "cpu_queue": "debug",
-        "cpu_time": "00:15:00",
+        "cpu_queue": "cpu",
+        "cpu_time": "01:00:00",
         "cpu_node": 1
       },
       "scheduler": {
-        "type": "slurm",
+        "type": "slurm", 
         "prepend_commands": [
-          "#SBATCH -A m2997",
+          "#SBATCH -A your_account",
           "export OMP_NUM_THREADS=128",
-          "export OMP_PLACES=threads",
-          "export OMP_PROC_BIND=spread",
-          "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
+          "export VASP_PP_PATH=/path/to/pseudopotentials"
         ]
       }
     }
   },
+  
   "user_luj_values": {
-    "Sc": {
-      "L": 2,
-      "U": 1.00,
-      "J": 0.0
-    },
-    "Fe": {
-      "L": 2,
-      "U": 5.00,
-      "J": 0.1
-    }
+    "Fe": {"L": 2, "U": 5.00, "J": 0.1},
+    "Co": {"L": 2, "U": 3.32, "J": 0.0},
+    "Ni": {"L": 2, "U": 6.45, "J": 0.0}
   },
+  
   "workflow_step_parameters": {
     "BULK_DFT_RELAX": {
-      "istart": 0,
-      "setups": {
-        "base": "recommended",
-        "W": "_sv"
-      },
       "encut": 600,
       "xc": "PBE",
-      "gga": "PE",
-      "npar": 1,
-      "gamma": true,
       "ismear": 0,
-      "inimix": 0,
-      "amix": 0.1,
-      "bmix": 0.00001,
-      "amix_mag": 0.1,
-      "bmix_mag": 0.00001,
-      "nelm": 250,
       "sigma": 0.05,
-      "algo": "normal",
       "ibrion": 2,
       "isif": 3,
       "ediffg": -0.02,
-      "ediff": 0.00000001,
-      "prec": "Normal",
+      "ediff": 1e-8,
       "nsw": 200,
-      "lvtot": false,
       "ispin": 2,
       "ldau": true,
       "ldautype": 2,
-      "laechg": true,
-      "lreal": false,
-      "lasph": true,
-      "ldauprint": 2,
-      "lmaxmix": 6,
-      "lorbit": 11,
-      "kpar": 4
+      "lorbit": 11
     },
     "BULK_DFT_DOS": {
-      "istart": 0,
-      "setups": {
-        "base": "recommended",
-        "W": "_sv"
-      },
       "encut": 600,
-      "xc": "PBE",
-      "gga": "PE",
-      "gamma": true,
-      "ismear": 0,
-      "inimix": 0,
-      "amix": 0.1,
-      "bmix": 0.00001,
-      "amix_mag": 0.1,
-      "bmix_mag": 0.00001,
-      "nelm": 250,
+      "xc": "PBE", 
+      "ismear": -5,
       "sigma": 0.05,
-      "algo": "normal",
-      "ibrion": 2,
-      "isif": 3,
-      "ediffg": -0.02,
-      "ediff": 0.00000001,
-      "prec": "Normal",
-      "nsw": 200,
-      "lvtot": false,
       "ispin": 2,
       "ldau": true,
-      "ldautype": 2,
-      "laechg": true,
-      "lreal": false,
-      "lasph": true,
-      "ldauprint": 2,
-      "lmaxmix": 6,
-      "lorbit": 11,
-      "kpar": 4,
-      "npar": 1
+      "lorbit": 11
     },
     "BULK_ICOHP": {
       "basisSet": "pbeVaspFit2015",
       "COHPStartEnergy": "-100",
-      "COHPEndEnergy": "100",
+      "COHPEndEnergy": "100", 
       "DensityOfEnergy": ".TRUE.",
       "max_radii": "2.3"
     }
   }
 }
+```
+</details>
 
+## 🔬 Supported Calculations
+
+### Bulk Material Calculations
+- **`BULK_DFT_RELAX`** - Structure optimization
+- **`BULK_DFT_DOS`** - Density of states calculation  
+- **`BULK_ICOHP`** - Chemical bonding analysis
+
+### Surface Calculations  
+- **`SURFACE_DFT_RELAX`** - Surface structure optimization
+- **`SURFACE_DFT_DOS`** - Surface density of states
+- **`SURFACE_ICOHP`** - Surface bonding analysis
+
+### Combined Workflows
+For comprehensive surface energy calculations:
+```json
+{"calculations": [
+  "BULK_DFT_RELAX", "BULK_DFT_DOS", 
+  "SURFACE_DFT_RELAX", "SURFACE_DFT_DOS"
+]}
 ```
 
-#### Want ot run surface calculations 
-Please make changes in the workflow_steps,  
-``` bash
-"workflow_steps": {
-    "dft": {
-      "calculations": [
-        "SURFACE_DFT_RELAX",
-        "SURFACE_DFT_DOS"
-      ],
-"icohp": {
-      "calculations": [
-        "SURFACE_ICOHP"
-      ],
+## 📊 Monitoring & Database Queries
+
+AutoCatLab automatically creates a SQLite database (`workflow.db`) to track calculation progress.
+
+### Command Line Monitoring
+```bash
+autocatlab show-progress --config config.json
 ```
-Also, make changes in the workflow_step_parameters. 
-``` bash
-"workflow_step_parameters": {
-    "SURFACE_DFT_RELAX": {
-    "SURFACE_DFT_DOS": {
-    "SURFACE_ICOHP": {
-```    
-#### ✅ Note: SURFACE_DFT_RELAX: performs a surface relaxation using DFT and SURFACE_DFT_DOS: calculates the Density of States after relaxation.
 
-#### Run BULK + ICOHP calculations. e.g. you want to compute surafce energies of a given bulk material inputs.
-To achieve that, AutoCatLab is integrated with CatKit for surface generator for different miller index. 
-Here is how you can do it.  
+### Database Queries
 
-``` bash
-"workflow_steps": {
-    "dft": {
-      "calculations": [
-        "BULK_DFT_RELAX",
-        "BULK_DFT_DOS",
-        "SURFACE_DFT_RELAX",
-        "SURFACE_DFT_DOS"
-      ],
-    "icohp": {
-      "calculations": [
-        "BULK_ICOHP", 
-        "SURFACE_ICOHP",
-      ],
-``` 
-Also, provide workflow_step_parameters for both  BULK and SURFACE.
-``` bash
-"workflow_step_parameters": {
-    "BULK_DFT_RELAX",
-    "BULK_DFT_DOS",
-    "BULK_ICOHP",
-    "SURFACE_DFT_RELAX": {
-    "SURFACE_DFT_DOS": {
-    "SURFACE_ICOHP": {
-``` 
+<details>
+<summary>Click to expand useful SQL queries</summary>
 
+```sql
+-- View all workflow statuses
+SELECT calc_unique_name, status, start_time, end_time, success
+FROM workflow_details;
 
+-- Find failed calculations
+SELECT calc_unique_name, error, end_time  
+FROM workflow_details
+WHERE success = 0;
 
+-- Count completed calculations by type
+SELECT calculation_name, COUNT(*) as completed_count
+FROM workflow_batch_executions  
+WHERE status = 'completed' AND success = 1
+GROUP BY calculation_name;
 
-## 📝 How to Cite
+-- Check execution times
+SELECT material_name, calculation_name,
+       (strftime('%s', end_time) - strftime('%s', start_time)) AS duration_seconds
+FROM workflow_batch_executions
+WHERE status = 'completed' 
+ORDER BY duration_seconds DESC;
+```
+</details>
 
-```bibtex
-@article{mahajan2024predicting,
-  title = {AutoCatlab: Automated DFT+ICOHP calculations for both BULK and SURFACES},
-  author = {Ruchika Mahajan and Kirsten Winther},
-  journal = {x.x.x},
-  volume = {x.x},
-  issue = {x},
-  pages = {12345},
-  numpages = {6},
-  year = {2025},
-  month = {July},
-  publisher = {American Physical Society},
-  doi = {10.x.x.x},
-  url = {https://link.aps.org/doi/10.1103/xxx}
+## 🛠️ Advanced Usage
+
+### Custom DFT Parameters
+Modify `workflow_step_parameters` in your config file to customize VASP settings:
+
+```json
+{
+  "BULK_DFT_RELAX": {
+    "encut": 800,
+    "kpar": 4,
+    "npar": 1,
+    "ismear": 0,
+    "ldau": true,
+    "ldautype": 2
+  }
 }
 ```
 
-## 👥 Authors
+### HPC Integration
+AutoCatLab supports SLURM job scheduling:
 
-This software was jointly developed by Dr. Ruchika Mahajan and Dr. Kirsten Winther, with Dr. Winther also providing guidance and oversight.
+```json
+{
+  "scheduler": {
+    "type": "slurm",
+    "prepend_commands": [
+      "#SBATCH --account=my_account",
+      "#SBATCH --partition=gpu",
+      "module load vasp/6.4.3",
+      "export VASP_PP_PATH=/path/to/potentials"
+    ]
+  }
+}
+```
+
+## 🧪 Example Workflows
+
+### 1. High-throughput Bulk Screening
+```bash
+# Screen 100+ materials for electronic properties
+autocatlab start-dft --config bulk_screening.json
+```
+
+### 2. Surface Energy Calculations  
+```bash
+# Calculate surface energies for different Miller indices
+autocatlab start-dft --config surface_energy.json
+```
+
+### 3. Chemical Bonding Analysis
+```bash  
+# Perform ICOHP analysis on relaxed structures
+autocatlab start-icohp --config bonding_analysis.json
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Installation Problems:**
+```bash
+# If pip install fails, try:
+pip install --upgrade pip setuptools wheel
+pip install --no-cache-dir git+https://...
+```
+
+**VASP Errors:**
+- Ensure `VASP_PP_PATH` is correctly set
+- Check pseudopotential files are accessible
+- Verify VASP module is loaded
+
+**Memory Issues:**
+- Reduce `batch_size` in configuration
+- Adjust `kpar` and `npar` parameters
+- Use appropriate queue resources
+
+**Resume Functionality:**
+```bash
+# If calculations are interrupted:
+autocatlab resume-dft --config config.json
+```
+
+## 📚 Documentation & Support
+
+### Useful Links
+- **[ASE Documentation](https://wiki.fysik.dtu.dk/ase/)** - Atomistic Simulation Environment
+- **[VASP Manual](https://www.vasp.at/wiki/index.php/The_VASP_Manual)** - VASP documentation
+- **[Materials Project](https://materialsproject.org/)** - Materials database
+- **[LOBSTER](http://www.cohp.de/)** - ICOHP analysis tool
+
+### Getting Help
+- Check the [GitHub Issues](https://github.com/ruchikamahajan66/autocatlab_v3/issues) for known problems
+- Review configuration examples in the repository
+- Ensure all dependencies are properly installed
+
+## 📄 Citation
+
+If you use AutoCatLab in your research, please cite:
+
+```bibtex
+@article{mahajan2025autocatlab,
+  title = {AutoCatLab: Automated DFT+ICOHP calculations for bulk materials and surfaces},
+  author = {Ruchika Mahajan and Kirsten Winther},
+  journal = {Journal of Computational Chemistry},
+  volume = {XX},
+  pages = {XXXX-XXXX},
+  year = {2025},
+  publisher = {Wiley},
+  doi = {10.1002/jcc.XXXXX},
+  url = {https://doi.org/10.1002/jcc.XXXXX}
+}
+```
+
+## 👥 Contributors
+
+- **Dr. Ruchika Mahajan** - Lead Developer  
+- **Dr. Kirsten Winther** - Co-Developer & Scientific Advisor
+
+## 📞 Contact
+
+For questions, suggestions, or collaborations:
+- **GitHub Issues**: [Report bugs or request features](https://github.com/ruchikamahajan66/autocatlab_v3/issues)
+- **Email**: Contact the development team through GitHub
+
 ## 📄 License
 
-AutoCatLab is released under the MIT License.
+AutoCatLab is released under the [MIT License](LICENSE). See the LICENSE file for details.
+
+---
+
+<div align="center">
+
+**⭐ Star this repository if AutoCatLab helps your research! ⭐**
+
+</div>
