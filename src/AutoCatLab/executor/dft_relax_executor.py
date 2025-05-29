@@ -18,6 +18,8 @@ from AutoCatLab.executor.calculation_executor import CalculationExecutor
 from ase.io import read
 from ase.calculators.vasp import Vasp
 from ase import Atoms
+from AutoCatLab.util.formal_oxidation_state import get_formal_oxidation_state
+
 
 
 class DFTRelaxExecutor(CalculationExecutor):
@@ -74,6 +76,9 @@ class DFTRelaxExecutor(CalculationExecutor):
             entry = restart_data["1"]
             charges = np.array(entry["initial_charges"]["__ndarray__"][2])
 
+        oxi_states = get_formal_oxidation_state(atoms)
+        oxi_states_list = oxi_states.tolist()
+
         # 6. Save to ASE DB
         with self.container.get("result_ase_db_connector") as connector:
             db = connector.db
@@ -104,7 +109,8 @@ class DFTRelaxExecutor(CalculationExecutor):
                         "charge": charge,
                         "charges": charges,
                         "fmax": fmax,
-                        "smax": smax
+                        "smax": smax,
+                        "oxidation_states": oxi_states_list
                     }
                 },
                 folder=str(Path(folder).parent)
