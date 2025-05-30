@@ -439,7 +439,7 @@ If you use AutoCatLab in your research, please cite:
 
 ```bibtex
 @article{mahajan2025autocatlab,
-  title = {AutoCatLab: Automated DFT+ICOHP calculations for bulk materials and surfaces},
+  title = {AutoCatLab: An Automated High-Throughput Framework for Generating Electronic Descriptors for Catalysis},
   author = {Ruchika Mahajan and Kirsten Winther},
   journal = {Journal of Computational Chemistry},
   volume = {XX},
