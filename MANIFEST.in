@@ -1,3 +1,2 @@
-include src/AutoCatLab/executor/util/*.yaml 
-include src/AutoCatLab/executor/util/*.yaml
-include src/AutoCatLab/util/*.json
+recursive-include src/AutoCatLab *.yaml
+recursive-include src/AutoCatLab *.json

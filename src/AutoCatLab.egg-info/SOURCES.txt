@@ -15,6 +15,9 @@ src/AutoCatLab.egg-info/top_level.txt
 src/AutoCatLab/client/__init__.py
 src/AutoCatLab/client/mpi_api.py
 src/AutoCatLab/constant/__init__.py
+src/AutoCatLab/constant/valence_orbital_mapping.yaml
+src/AutoCatLab/constant/valence_orbital_mapping_new.yaml
+src/AutoCatLab/constant/valence_orbital_mapping_new_metal_d_o2p.yaml
 src/AutoCatLab/db/__init__.py
 src/AutoCatLab/db/connectors.py
 src/AutoCatLab/db/crud.py
@@ -26,7 +29,6 @@ src/AutoCatLab/executor/dft_dos_executor.py
 src/AutoCatLab/executor/dft_relax_executor.py
 src/AutoCatLab/executor/icohp_executor.py
 src/AutoCatLab/executor/util/__init__.py
-src/AutoCatLab/executor/util/calculation_helper.py
 src/AutoCatLab/executor/util/rapidos.py
 src/AutoCatLab/executor/util/splitdos.py
 src/AutoCatLab/executor/util/util.py
@@ -39,6 +41,7 @@ src/AutoCatLab/initializer/job_script_generator.py
 src/AutoCatLab/logger/__init__.py
 src/AutoCatLab/util/__init__.py
 src/AutoCatLab/util/config.json
+src/AutoCatLab/util/formal_oxidation_state.py
 src/AutoCatLab/util/util.py
 src/AutoCatLab/validator/__init__.py
 src/AutoCatLab/workflow/__init__.py

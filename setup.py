@@ -8,7 +8,7 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     package_data={
-        "AutoCatLab.executor.util": ["*.yaml", "*.json"],
+        "AutoCatLab.constant": ["*.yaml", "*.json"],
         "AutoCatLab.util": ["*.yaml", "*.json"],
     },
     install_requires=[
