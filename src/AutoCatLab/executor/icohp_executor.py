@@ -9,6 +9,7 @@ import yaml
 from ase.io import read
 from yaml import Loader
 import numpy as np
+import shutil
 from ase.io.vasp import read_vasp_out
 
 # from db.models import WorkflowDetail, WorkflowBatchDetail, WorkflowBatchExecution
@@ -133,6 +134,7 @@ class ICOHPExecutor(CalculationExecutor):
                 self.logger.info("Running in local development mode. Skipping ICOHP.")
 
             lobster_files = [
+                'OUTCAR',
                 'bandOverlaps.lobster',
                 'CHARGE.lobster',
                 'COBICAR.lobster',
@@ -151,8 +153,12 @@ class ICOHPExecutor(CalculationExecutor):
 
             for file in lobster_files:
                 src_file = os.path.join(source_dir, file)
+                dest_file = os.path.join(dest_dir, file)
                 if os.path.exists(src_file):
-                    subprocess.call(['mv', src_file, dest_dir])
+                    if file == 'OUTCAR':
+                        shutil.copy2(src_file, dest_file)
+                    else:
+                        shutil.move(src_file, dest_file)
 
             self.logger.info("Successfully moved LOBSTER output files to destination directory")
             self.logger.info(f"Successfully completed LOBSTER calculation for material {execution.material_name}")
