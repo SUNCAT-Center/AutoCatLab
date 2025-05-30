@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![ASE](https://img.shields.io/badge/ASE-compatible-green.svg)](https://wiki.fysik.dtu.dk/ase/)
 
-**AutoCatLab** is a powerful Python library for seamless high-throughput computational chemistry calculations. It performs automated DFT (Density Functional Theory) and DFT+ICOHP (Integrated Crystal Orbital Hamilton Population) calculations for both **bulk materials** and **surfaces** with comprehensive data analysis through a configuration-driven approach.
+**AutoCatLab** is a powerful Python library for seamless high-throughput computational (Density Functional Theory) DFT calculations. It performs automated DFT and DFT+ICOHP (Integrated Crystal Orbital Hamilton Population) calculations for both **bulk materials** and **surfaces** with comprehensive data analysis through a configuration-driven approach. 
 
 ## ✨ Key Features
 
@@ -27,29 +27,32 @@ python -m venv autocatlab-env
 source autocatlab-env/bin/activate  # On Windows: autocatlab-env\Scripts\activate
 
 # Install AutoCatLab
-pip install git+https://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@github.com/ruchikamahajan66/autocatlab_v3.git
-
+pip3 install git+https://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@github.com/ruchikamahajan66/autocatlab_v3.git 
 # Install CatKit for surface generation
-pip install git+https://github.com/ruchikamahajan66/CatKit.git@fix_requirements#egg=CatKit
+pip3 install git+https://github.com/ruchikamahajan66/CatKit.git@fix_requirements#egg=CatKit 
 
 # Verify installation
 autocatlab --help
+pip show CatKit 
 ```
 
 ### Basic Usage
 
 ```bash
 # Start DFT calculations
-autocatlab start-dft --config config.json
+autocatlab start-dft --config /path/to/your/config.json
 
 # Resume interrupted calculations  
-autocatlab resume-dft --config config.json
+autocatlab resume-dft --config /path/to/your/config.json
 
 # Run ICOHP analysis
-autocatlab start-icohp --config config.json
+autocatlab start-icohp --config /path/to/your/config.json
+
+# Resume ICOHP analysis
+autocatlab resume-icohp --config /path/to/your/config.json
 
 # Monitor progress
-autocatlab show-progress --config config.json
+autocatlab show-progress --config /path/to/your/config.json
 ```
 
 ## 📋 Prerequisites
@@ -115,15 +118,14 @@ Choose one of three input methods:
 
 ```json
 {
-  "workflow_unique_name": "my_dft_workflow",
+  "workflow_unique_name": "testing_v3_2",
   "workflow_input": {
     "type": "location",
-    "value": "/path/to/input/materials/",
-    "mp_api_key": "your_mp_api_key_here"
+    "value": "/path/to/your/input/dir/",
+    "mp_api_key": "/your/mp/api/key"
   },
-  "workflow_output_directory": "/path/to/output/",
-  "batch_size": 4,
-  
+  "workflow_output_directory": "/path/to/your/output/dir/",
+  "batch_size": 2,
   "workflow_steps": {
     "dft": {
       "calculations": [
@@ -131,8 +133,8 @@ Choose one of three input methods:
         "BULK_DFT_DOS"
       ],
       "submission_detail": {
-        "gpu_queue": "gpu",
-        "time": "02:00:00", 
+        "gpu_queue": "debug",
+        "time": "00:30:00",
         "node": 1,
         "gpu": 4,
         "nTask": 4,
@@ -141,10 +143,13 @@ Choose one of three input methods:
       "scheduler": {
         "type": "slurm",
         "prepend_commands": [
-          "#SBATCH -A your_account",
+          "#SBATCH -A m2997_g",
           "export OMP_NUM_THREADS=1",
+          "export OMP_PLACES=threads",
+          "export OMP_PROC_BIND=spread",
           "module load vasp/6.4.3-gpu",
-          "export VASP_PP_PATH=/path/to/pseudopotentials"
+          "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54",
+          "export DB_OUTPUT_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
         ]
       }
     },
@@ -153,56 +158,115 @@ Choose one of three input methods:
         "BULK_ICOHP"
       ],
       "submission_detail": {
-        "cpu_queue": "cpu",
-        "cpu_time": "01:00:00",
+        "cpu_queue": "debug",
+        "cpu_time": "00:15:00",
         "cpu_node": 1
       },
       "scheduler": {
-        "type": "slurm", 
+        "type": "slurm",
         "prepend_commands": [
-          "#SBATCH -A your_account",
+          "#SBATCH -A m2997",
           "export OMP_NUM_THREADS=128",
-          "export VASP_PP_PATH=/path/to/pseudopotentials"
+          "export OMP_PLACES=threads",
+          "export OMP_PROC_BIND=spread",
+          "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
         ]
       }
     }
   },
-  
   "user_luj_values": {
-    "Fe": {"L": 2, "U": 5.00, "J": 0.1},
-    "Co": {"L": 2, "U": 3.32, "J": 0.0},
-    "Ni": {"L": 2, "U": 6.45, "J": 0.0}
+    "Sc": {
+      "L": 2,
+      "U": 1.00,
+      "J": 0.0
+    },
+    "Fe": {
+      "L": 2,
+      "U": 5.00,
+      "J": 0.1
+    }
   },
-  
   "workflow_step_parameters": {
     "BULK_DFT_RELAX": {
+      "istart": 0,
+      "setups": {
+        "base": "recommended",
+        "W": "_sv"
+      },
       "encut": 600,
       "xc": "PBE",
+      "gga": "PE",
+      "npar": 1,
+      "gamma": true,
       "ismear": 0,
+      "inimix": 0,
+      "amix": 0.1,
+      "bmix": 0.00001,
+      "amix_mag": 0.1,
+      "bmix_mag": 0.00001,
+      "nelm": 250,
       "sigma": 0.05,
+      "algo": "normal",
       "ibrion": 2,
       "isif": 3,
       "ediffg": -0.02,
-      "ediff": 1e-8,
+      "ediff": 0.00000001,
+      "prec": "Normal",
       "nsw": 200,
+      "lvtot": false,
       "ispin": 2,
       "ldau": true,
       "ldautype": 2,
-      "lorbit": 11
+      "laechg": true,
+      "lreal": false,
+      "lasph": true,
+      "ldauprint": 2,
+      "lmaxmix": 6,
+      "lorbit": 11,
+      "kpar": 4
     },
     "BULK_DFT_DOS": {
+      "istart": 0,
+      "setups": {
+        "base": "recommended",
+        "W": "_sv"
+      },
       "encut": 600,
-      "xc": "PBE", 
-      "ismear": -5,
+      "xc": "PBE",
+      "gga": "PE",
+      "gamma": true,
+      "ismear": 0,
+      "inimix": 0,
+      "amix": 0.1,
+      "bmix": 0.00001,
+      "amix_mag": 0.1,
+      "bmix_mag": 0.00001,
+      "nelm": 250,
       "sigma": 0.05,
+      "algo": "normal",
+      "ibrion": 2,
+      "isif": 3,
+      "ediffg": -0.02,
+      "ediff": 0.00000001,
+      "prec": "Normal",
+      "nsw": 200,
+      "lvtot": false,
       "ispin": 2,
       "ldau": true,
-      "lorbit": 11
+      "ldautype": 2,
+      "laechg": true,
+      "lreal": false,
+      "lasph": true,
+      "ldauprint": 2,
+      "lmaxmix": 6,
+      "lorbit": 11,
+      "kpar": 4,
+      "npar": 1
     },
     "BULK_ICOHP": {
       "basisSet": "pbeVaspFit2015",
       "COHPStartEnergy": "-100",
-      "COHPEndEnergy": "100", 
+      "COHPEndEnergy": "100",
       "DensityOfEnergy": ".TRUE.",
       "max_radii": "2.3"
     }
@@ -234,7 +298,7 @@ For comprehensive surface energy calculations:
 
 ## 📊 Monitoring & Database Queries
 
-AutoCatLab automatically creates a SQLite database (`workflow.db`) to track calculation progress.
+A SQLite database (`workflow.db`) is automatically generated in your output directory (`workflow_output` in `config.json`) when you run DFT or ICOHP calculations. You can query it to check the status of your jobs.
 
 ### Command Line Monitoring
 ```bash
@@ -295,14 +359,17 @@ AutoCatLab supports SLURM job scheduling:
 ```json
 {
   "scheduler": {
-    "type": "slurm",
-    "prepend_commands": [
-      "#SBATCH --account=my_account",
-      "#SBATCH --partition=gpu",
-      "module load vasp/6.4.3",
-      "export VASP_PP_PATH=/path/to/potentials"
-    ]
-  }
+        "type": "slurm",
+        "prepend_commands": [
+          "#SBATCH -A m2997_g",
+          "export OMP_NUM_THREADS=1",
+          "export OMP_PLACES=threads",
+          "export OMP_PROC_BIND=spread",
+          "module load vasp/6.4.3-gpu",
+          "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54",
+          "export DB_OUTPUT_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
+        ]
+      }
 }
 ```
 
@@ -402,7 +469,5 @@ AutoCatLab is released under the [MIT License](LICENSE). See the LICENSE file fo
 ---
 
 <div align="center">
-
-**⭐ Star this repository if AutoCatLab helps your research! ⭐**
 
 </div>
