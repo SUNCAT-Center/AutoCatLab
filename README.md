@@ -455,7 +455,7 @@ If you use AutoCatLab in your research, please cite:
 
 <div align="center">
 
-<table style="border: none;">
+<table style="border-collapse: collapse; border: none;">
 <tr style="border: none;">
 <td align="center" style="border: none;">
 <img src="https://github.com/ruchikamahajan66.png" width="150" height="150" style="border-radius: 50%;">
