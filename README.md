@@ -457,19 +457,19 @@ If you use AutoCatLab in your research, please cite:
 
 <table style="border-collapse: collapse; border: none;">
 <tr style="border: none;">
-<td align="center" style="border: none;">
-<img src="https://github.com/ruchikamahajan66.png" width="150" height="150" style="border-radius: 50%;">
+<td align="center" style="border: none; padding: 20px;">
+<img src="https://raw.githubusercontent.com/ruchikamahajan66/autocatlab_v3/main/docs/images/ruchika_profile.jpg" width="150" height="150" style="border-radius: 50%;">
 <br><br>
-<strong><a href="https://suncat.stanford.edu/people/ruchika-mahajan"> Dr. Ruchika Mahajan</a></strong>
+<strong><a href="https://github.com/ruchikamahajan66">Dr. Ruchika Mahajan</a></strong>
 <br>
 Lead Developer
 <br><br>
 Postdoctoral Scholar, SUNCAT, SLAC<br>National Accelerator Laboratory, Stanford University
 </td>
-<td align="center" style="border: none;">
-<img src="https://github.com/kirstenwinther.png" width="150" height="150" style="border-radius: 50%;">
+<td align="center" style="border: none; padding: 20px;">
+<img src="https://raw.githubusercontent.com/ruchikamahajan66/autocatlab_v3/main/docs/images/kirsten_profile.jpg" width="150" height="150" style="border-radius: 50%;">
 <br><br>
-<strong><a href="https://suncat.stanford.edu/people/kirsten-winther">Dr. Kirsten Winther</a></strong>
+<strong><a href="https://github.com/kirstenwinther">Dr. Kirsten Winther</a></strong>
 <br>
 Co-Developer & Scientific Advisor
 <br><br>
