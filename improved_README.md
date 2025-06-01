@@ -451,10 +451,34 @@ If you use AutoCatLab in your research, please cite:
 }
 ```
 
-## 👥 Contributors
+## 👥 SUNCAT-affiliated developers of AutoCatLab
 
-- **Dr. Ruchika Mahajan** - Lead Developer  
-- **Dr. Kirsten Winther** - Co-Developer & Scientific Advisor
+<div align="center">
+
+<table style="border: none;">
+<tr style="border: none;">
+<td align="center" style="border: none;">
+<img src="https://github.com/ruchikamahajan66.png" width="150" height="150" style="border-radius: 50%;">
+<br><br>
+<strong><a href="https://suncat.stanford.edu/people/ruchika-mahajan"> Dr. Ruchika Mahajan</a></strong>
+<br>
+Lead Developer
+<br><br>
+Postdoctoral Scholar, SUNCAT, SLAC<br>National Accelerator Laboratory, Stanford University
+</td>
+<td align="center" style="border: none;">
+<img src="https://github.com/kirstenwinther.png" width="150" height="150" style="border-radius: 50%;">
+<br><br>
+<strong><a href="https://suncat.stanford.edu/people/kirsten-winther">Dr. Kirsten Winther</a></strong>
+<br>
+Co-Developer & Scientific Advisor
+<br><br>
+Associate Staff Scientist, SUNCAT, SLAC<br>National Accelerator Laboratory
+</td>
+</tr>
+</table>
+
+</div>
 
 ## 📞 Contact
 
