@@ -435,7 +435,7 @@ autocatlab resume-dft --config config.json
 
 ## 📄 Citation
 
-If you use AutoCatLab in your research, please cite:
+If you use AutoCatLab in your research, please cite the following paper:
 
 ```bibtex
 @article{mahajan2025autocatlab,
