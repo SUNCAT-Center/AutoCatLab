@@ -27,7 +27,7 @@ python -m venv autocatlab-env
 source autocatlab-env/bin/activate  # On Windows: autocatlab-env\Scripts\activate
 
 # Install AutoCatLab
-pip3 install git+https://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@github.com/ruchikamahajan66/autocatlab_v3.git 
+pip3 install git+https://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@github.com/SUNCAT-Center/AutoCatLab.git@dev#egg=AutoCatLab
 # Install CatKit for surface generation
 pip3 install git+https://github.com/ruchikamahajan66/CatKit.git@fix_requirements#egg=CatKit 
 
@@ -118,7 +118,7 @@ Choose one of three input methods:
 
 ```json
 {
-  "workflow_unique_name": "testing_v3_2",
+  "workflow_unique_name": "first_calc",
   "workflow_input": {
     "type": "location",
     "value": "/path/to/your/input/dir/",
@@ -429,7 +429,7 @@ autocatlab resume-dft --config config.json
 - **[LOBSTER](http://www.cohp.de/)** - ICOHP analysis tool
 
 ### Getting Help
-- Check the [GitHub Issues](https://github.com/ruchikamahajan66/autocatlab_v3/issues) for known problems
+- Check the [GitHub Issues](https://github.com/SUNCAT-Center/AutoCatLab/issues) for known problems
 - Review configuration examples in the repository
 - Ensure all dependencies are properly installed
 
@@ -441,13 +441,13 @@ If you use AutoCatLab in your research, please cite:
 @article{mahajan2025autocatlab,
   title = {AutoCatLab: An Automated High-Throughput Framework for Generating Electronic Descriptors for Catalysis},
   author = {Ruchika Mahajan and Kirsten Winther},
-  journal = {Journal of Computational Chemistry},
+  journal = {Journal of xxxx-xxxx},
   volume = {XX},
   pages = {XXXX-XXXX},
   year = {2025},
   publisher = {Wiley},
   doi = {10.1002/jcc.XXXXX},
-  url = {https://doi.org/10.1002/jcc.XXXXX}
+  url = {https://doi.org/10.xxx/jcc.XXXXX}
 }
 ```
 
@@ -455,7 +455,7 @@ If you use AutoCatLab in your research, please cite:
 
 <div align="center">
 
-<table style="border-collapse: collapse; border: none;">
+<table style="border: none;">
 <tr style="border: none;">
 <td align="center" style="border: none;">
 <img src="https://github.com/ruchikamahajan66.png" width="150" height="150" style="border-radius: 50%;">
@@ -483,8 +483,13 @@ Associate Staff Scientist, SUNCAT, SLAC<br>National Accelerator Laboratory
 ## 📞 Contact
 
 For questions, suggestions, or collaborations:
-- **GitHub Issues**: [Report bugs or request features](https://github.com/ruchikamahajan66/autocatlab_v3/issues)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/SUNCAT-Center/AutoCatLab/issues)
 - **Email**: Contact the development team through GitHub
+
+- **Office Hours**: Join our weekly Zoom office hours  
+  ⏰ **Every Friday from 2:00 – 3:00 PM (PST time)**  
+  🔗 [Join Zoom Meeting](https://example.zoom.us/j/1234567890)  
+  *(Feel free to drop in with questions about AutoCatLab!)*
 
 ## 📄 License
 
