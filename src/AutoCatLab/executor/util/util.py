@@ -231,8 +231,9 @@ def get_nbands_cohp(directory):
         Nelectrons += zval * n
 
     # add a few extra bands
-    Nbands = max(Nbands, Nelectrons)
-
+    # Nbands = max(Nbands, Nelectrons)
+    Nbands = int(1.3 * Nelectrons)
+    # round up to multiple of 4
     Nbands += 4 - Nbands % 4
 
     return Nbands
