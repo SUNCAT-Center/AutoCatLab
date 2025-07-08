@@ -166,6 +166,7 @@ class DFTDOSExecutor(CalculationExecutor):
             LUJ_values = get_LUJ_values(atoms, user_luj)
 
             nbands_cohp = get_nbands_cohp(directory=dir + '/')
+            self.logger.info(f"computing DFT DOS NBANDS {nbands_cohp}")
 
             vasp_params = config['workflow_step_parameters'][calculation_name]
 
@@ -177,9 +178,11 @@ class DFTDOSExecutor(CalculationExecutor):
                 'nbands': nbands_cohp
             })
 
+
             calc = Vasp(**vasp_params)
 
             atoms.set_calculator(calc)
+
 
             if not get_bool_env('local_dev'):
                 atoms.get_potential_energy()
