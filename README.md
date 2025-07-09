@@ -476,7 +476,7 @@ For questions, suggestions, or collaborations:
 
 - **Office Hours**: Join our weekly Zoom office hours  
   ⏰ **Every Friday from 2:00 – 3:00 PM (PST time)**  
-  🔗 [Join Zoom Meeting](https://example.zoom.us/j/1234567890)  
+  🔗 [Join Zoom Meeting](https://us04web.zoom.us/j/3177624266?pwd=R3N1ZmpJeVhGUVNvOVJIeGcxc3JzUT09)  
   *(Feel free to drop in with questions about AutoCatLab!)*
 
 ## 📄 License
