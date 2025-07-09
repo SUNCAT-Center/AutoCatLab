@@ -24,10 +24,10 @@
 ```bash
 # Create and activate virtual environment (Python 3.10+ required)
 python -m venv autocatlab-env
-source autocatlab-env/bin/activate  # On Windows: autocatlab-env\Scripts\activate
+source autocatlab-env/bin/activate  
 
 # Install AutoCatLab
-pip3 pip3 install git+https://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@github.com/SUNCAT-Center/AutoCatLab.git
+pip3 install git+https://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@github.com/SUNCAT-Center/AutoCatLab.git
 # Install CatKit for surface generation
 pip3 install git+https://github.com/ruchikamahajan66/CatKit.git@fix_requirements#egg=CatKit 
 
@@ -94,7 +94,7 @@ Choose one of three input methods:
 {
   "workflow_input": {
     "type": "mp_ids", 
-    "value": ["mp-14333", "mp-3748"],
+    "value": "mp-14333, mp-3748",
     "mp_api_key": "your_materials_project_api_key"
   }
 }
@@ -118,14 +118,14 @@ Choose one of three input methods:
 
 ```json
 {
-  "workflow_unique_name": "first_calc",
+  "workflow_unique_name": "workflow",
   "workflow_input": {
-    "type": "location",
-    "value": "/path/to/your/input/dir/",
-    "mp_api_key": "/your/mp/api/key"
+    "type": "mp_mpids",
+    "value": "mp-996996, mp-2311, mp-2310",
+    "mp_api_key": "your/mp/api/key"
   },
-  "workflow_output_directory": "/path/to/your/output/dir/",
-  "batch_size": 2,
+  "workflow_output_directory": "/output/path/",
+  "batch_size": 1,
   "workflow_steps": {
     "dft": {
       "calculations": [
@@ -133,8 +133,8 @@ Choose one of three input methods:
         "BULK_DFT_DOS"
       ],
       "submission_detail": {
-        "gpu_queue": "debug",
-        "time": "00:30:00",
+        "gpu_queue": "regular",
+        "time": "02:00:00",
         "node": 1,
         "gpu": 4,
         "nTask": 4,
@@ -158,8 +158,8 @@ Choose one of three input methods:
         "BULK_ICOHP"
       ],
       "submission_detail": {
-        "cpu_queue": "debug",
-        "cpu_time": "00:15:00",
+        "cpu_queue": "regular",
+        "cpu_time": "01:00:00",
         "cpu_node": 1
       },
       "scheduler": {
@@ -172,18 +172,6 @@ Choose one of three input methods:
           "export VASP_PP_PATH=/global/cfs/cdirs/m2997/vasp-psp/pseudo54"
         ]
       }
-    }
-  },
-  "user_luj_values": {
-    "Sc": {
-      "L": 2,
-      "U": 1.00,
-      "J": 0.0
-    },
-    "Fe": {
-      "L": 2,
-      "U": 5.00,
-      "J": 0.1
     }
   },
   "workflow_step_parameters": {
@@ -226,7 +214,7 @@ Choose one of three input methods:
       "kpar": 4
     },
     "BULK_DFT_DOS": {
-      "istart": 0,
+      "istart": 1,
       "setups": {
         "base": "recommended",
         "W": "_sv"
@@ -245,11 +233,9 @@ Choose one of three input methods:
       "sigma": 0.05,
       "algo": "normal",
       "ibrion": 2,
-      "isif": 3,
-      "ediffg": -0.02,
       "ediff": 0.00000001,
       "prec": "Normal",
-      "nsw": 200,
+      "nsw": 0,
       "lvtot": false,
       "ispin": 2,
       "ldau": true,
@@ -260,15 +246,17 @@ Choose one of three input methods:
       "ldauprint": 2,
       "lmaxmix": 6,
       "lorbit": 11,
+      "isym" :0,
+      "nedos":3000,
       "kpar": 4,
       "npar": 1
     },
     "BULK_ICOHP": {
       "basisSet": "pbeVaspFit2015",
-      "COHPStartEnergy": "-100",
-      "COHPEndEnergy": "100",
+      "COHPStartEnergy": "-40",
+      "COHPEndEnergy": "40",
       "DensityOfEnergy": ".TRUE.",
-      "max_radii": "2.3"
+      "max_radii": "3"
     }
   }
 }
