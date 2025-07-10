@@ -161,7 +161,7 @@ class DFTDOSExecutor(CalculationExecutor):
             if not is_bulk:
                 atoms.pbc = [1, 1, 1]
 
-            kpoints = get_kpoints(atoms, effective_length=60, bulk=is_bulk)
+            kpoints = get_kpoints(atoms, effective_length=40, bulk=is_bulk)
             user_luj = config['user_luj_values']
             LUJ_values = get_LUJ_values(atoms, user_luj)
 
