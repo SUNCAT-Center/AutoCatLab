@@ -232,6 +232,7 @@ def get_nbands_cohp(directory):
 
     # add a few extra bands
     Nbands = max(Nbands, Nelectrons)
+
     # round up to multiple of 4
     Nbands += 4 - Nbands % 4
 
@@ -354,12 +355,13 @@ def write_lobsterIn(directory, config_params=None):
         }
 
     script = open(directory + 'lobsterin', "w")
+    max_radii = get_max_radii(directory)
     lines = [
         f"basisSet {config_params['basisSet']} \n",
         f"COHPStartEnergy {config_params['COHPStartEnergy']} \n",
         f"COHPEndEnergy {config_params['COHPEndEnergy']} \n",
         f"DensityOfEnergy {config_params['DensityOfEnergy']} \n",
-        f"cohpGenerator from 0.1 to {config_params['max_radii']} orbitalWise \n"
+        f"cohpGenerator from 0.1 to {max_radii} orbitalWise \n"
     ]
     
     calculation_lines = []
