@@ -26,10 +26,11 @@
 python -m venv autocatlab-env
 source autocatlab-env/bin/activate  
 
-# Install AutoCatLab
-pip3 install git+https://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@github.com/SUNCAT-Center/AutoCatLab.git
 # Install CatKit for surface generation
 pip3 install git+https://github.com/ruchikamahajan66/CatKit.git@fix_requirements#egg=CatKit 
+# Install AutoCatLab
+pip3 install git+https://github.com/SUNCAT-Center/AutoCatLab.git
+
 
 # Verify installation
 autocatlab --help
