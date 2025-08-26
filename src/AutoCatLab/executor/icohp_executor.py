@@ -45,8 +45,9 @@ class ICOHPExecutor(CalculationExecutor):
         for item in species:
             orbital3[item] = orbital_map3[item].split()
 
-        I_matrix = get_icohp_matrix(atoms, str(folder) + '/ICOHPLIST.lobster')  # take all orbitals for now
+        I_matrix, d_matrix = get_icohp_matrix(atoms, str(folder) + '/ICOHPLIST.lobster')  # take all orbitals for now
         I_sum = np.sum(I_matrix, axis=1)
+        d_sum = np.sum(d_matrix, axis=1)
         I_matrix_s_d = get_icohp_matrix(atoms, str(folder) + '/ICOHPLIST.lobster',
                                         orbitals=orbital)  # take all orbitals for now
         I_sum_s_d = np.sum(I_matrix_s_d, axis=1)
@@ -80,6 +81,7 @@ class ICOHPExecutor(CalculationExecutor):
                         execution.calculation_name: {
                             'icohp_matrix': I_matrix,
                             'icohp_sum': I_sum,
+                            'distance_sum': d_sum,
                             'icohp_matrix_s_d': I_matrix_s_d,
                             'icohp_sum_s_d': I_sum_s_d,
                             'icohp_sum_s_d_o_2s_2p': I_sum_s_d_o_2s_2p,

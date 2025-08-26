@@ -399,6 +399,7 @@ def get_icohp_matrix(atoms, filename='ICOHPLIST.lobster', orbitals='all'):
                 'O':  ['2p']}
     """
     I_matrix = np.zeros([len(atoms), len(atoms)])
+    d_matrix = np.zeros([len(atoms), len(atoms)])
     icohps = []
     for line in open(filename, 'r'):
         linesplit = line.split()
@@ -442,8 +443,10 @@ def get_icohp_matrix(atoms, filename='ICOHPLIST.lobster', orbitals='all'):
 
         I_matrix[idx1, idx2] += float(icohp)
         I_matrix[idx2, idx1] += float(icohp)
+        d_matrix[idx1, idx2]  = float(distance)
+        d_matrix[idx2, idx1]  = float(distance)
 
-    return I_matrix
+    return I_matrix, d_matrix
 
 
 def get_icohp_vs_d(atoms, filename):
