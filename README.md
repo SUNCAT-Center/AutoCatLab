@@ -429,7 +429,7 @@ If you use AutoCatLab in your research, please cite:
 ```bibtex
 @article{mahajan2025autocatlab,
   title = {AutoCatLab: An Automated High-Throughput Framework for Generating Electronic Descriptors for Catalysis},
-  author = {Ruchika Mahajan and Kirsten Winther},
+  author = {Ruchika Mahajan and Kirsten T. Winther},
   journal = {Journal of xxxx-xxxx},
   volume = {XX},
   pages = {XXXX-XXXX},

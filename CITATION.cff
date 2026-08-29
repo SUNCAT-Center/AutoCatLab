@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+title: "AutoCatLab: An Automated High-Throughput Framework for Generating Electronic Descriptors for Catalysis"
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+authors:
+  - given-names: Ruchika
+    family-names: Mahajan
+    affiliation: "SUNCAT Center for Interface Science and Catalysis, SLAC National Accelerator Laboratory, Menlo Park, California 94025, United States; Department of Chemical Engineering, Stanford University, Stanford, California 94305, United States"
+    email: mahajann@slac.stanford.edu
+    orcid: "https://orcid.org/0000-0001-9333-3717"
+  - given-names: Kirsten T.
+    family-names: Winther
+    affiliation: "SUNCAT Center for Interface Science and Catalysis, SLAC National Accelerator Laboratory, Menlo Park, California 94025, United States"
+    email: winther@slac.stanford.edu
+    orcid: "https://orcid.org/0000-0003-1254-1165"
+repository-code: "https://github.com/SUNCAT-Center/AutoCatLab"
+license: MIT
+version: 0.1.0
+date-released: "2026-04-14"
+# doi: "10.5281/zenodo.XXXXXXX"   # uncomment after archiving a release on Zenodo
+# Corresponding authors
+contact:
+  - given-names: Ruchika
+    family-names: Mahajan
+    email: mahajann@slac.stanford.edu
+    affiliation: "SUNCAT Center for Interface Science and Catalysis, SLAC National Accelerator Laboratory, Menlo Park, California 94025, United States; Department of Chemical Engineering, Stanford University, Stanford, California 94305, United States"
+    orcid: "https://orcid.org/0000-0001-9333-3717"
+  - given-names: Kirsten T.
+    family-names: Winther
+    email: winther@slac.stanford.edu
+    affiliation: "SUNCAT Center for Interface Science and Catalysis, SLAC National Accelerator Laboratory, Menlo Park, California 94025, United States"
+    orcid: "https://orcid.org/0000-0003-1254-1165"
+keywords:
+  - density functional theory
+  - high-throughput screening
+  - catalysis
+  - electronic descriptors
+  - ICOHP
