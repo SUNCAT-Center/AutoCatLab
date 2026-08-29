@@ -3,6 +3,7 @@
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![ASE](https://img.shields.io/badge/ASE-compatible-green.svg)](https://wiki.fysik.dtu.dk/ase/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22154419.svg)](https://doi.org/10.5281/zenodo.22154419)
 
 **AutoCatLab** is a powerful Python library for seamless high-throughput computational (Density Functional Theory) DFT calculations. It performs automated DFT and DFT+ICOHP (Integrated Crystal Orbital Hamilton Population) calculations for both **bulk materials** and **surfaces** with comprehensive data analysis through a configuration-driven approach. 
 
@@ -424,21 +425,38 @@ autocatlab resume-dft --config config.json
 
 ## 📄 Citation
 
-If you use AutoCatLab in your research, please cite:
+If you use AutoCatLab in your research, please cite **the software**:
+
+> Mahajan, R., & Winther, K. T. (2026). *AutoCatLab: An Automated High-Throughput
+> Framework for Generating Electronic Descriptors for Catalysis* (Version 0.1.0)
+> [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.22154419
 
 ```bibtex
-@article{mahajan2025autocatlab,
-  title = {AutoCatLab: An Automated High-Throughput Framework for Generating Electronic Descriptors for Catalysis},
-  author = {Ruchika Mahajan and Kirsten T. Winther},
-  journal = {Journal of xxxx-xxxx},
-  volume = {XX},
-  pages = {XXXX-XXXX},
-  year = {2025},
-  publisher = {Wiley},
-  doi = {10.1002/jcc.XXXXX},
-  url = {https://doi.org/10.xxx/jcc.XXXXX}
+@software{mahajan2026autocatlab,
+  title    = {AutoCatLab: An Automated High-Throughput Framework for Generating Electronic Descriptors for Catalysis},
+  author   = {Mahajan, Ruchika and Winther, Kirsten T.},
+  year     = {2026},
+  version  = {0.1.0},
+  publisher = {Zenodo},
+  doi      = {10.5281/zenodo.22154419},
+  url      = {https://doi.org/10.5281/zenodo.22154419}
 }
 ```
+
+The DOI above is the *concept DOI* - it always resolves to the latest release.
+For strict reproducibility, cite instead the version-specific DOI of the release
+you actually used; for v0.1.0 that is
+[10.5281/zenodo.22154420](https://doi.org/10.5281/zenodo.22154420). Every release
+gets its own, listed under **Versions** on the Zenodo record.
+
+Citation metadata is also machine-readable in [`CITATION.cff`](CITATION.cff);
+GitHub's **"Cite this repository"** button generates APA and BibTeX from it.
+
+### Accompanying publication
+
+A journal article describing the AutoCatLab methodology is **in preparation**.
+Once published, please cite the paper for the method and the Zenodo DOI for the
+specific software version used.
 
 ## 👥 SUNCAT-affiliated developers of AutoCatLab
 
